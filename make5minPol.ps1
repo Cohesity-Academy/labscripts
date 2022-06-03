@@ -1,4 +1,4 @@
-. .\cohesity-api.ps1
+.\cohesity-api.ps1
 
 [CmdletBinding()]
 param (
