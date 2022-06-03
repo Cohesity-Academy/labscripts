@@ -1,13 +1,13 @@
-# usage: ./protectPhysicalLinux.ps1 -vip mycluster -username myusername -password mypassword -Name policyname -frequency frequencyinminutes
+# usage: ./protectPhysicalLinux.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" -frequency frequencyinminutes
 
 # process commandline arguments
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
-    [Parameter(Mandatory = $True)][string]$password = '',  # local or AD domain password
-    [Parameter(Mandatory = $True)][int]$frequency = '',  # backup in min   
-    [Parameter(Mandatory = $True)][string]$name = '',  # name of policy
+    [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password
+    [Parameter(Mandatory = $True)][int]$frequency,  # backup in min   
+    [Parameter(Mandatory = $True)][string]$name  # name of policy
 )
 
 # source the cohesity-api helper code
