@@ -1,4 +1,4 @@
-# usage: ./protectPhysicalLinux.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" -frequency frequencyinminutes
+# usage: ./backupolicy.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" -frequency frequencyinminutes
 
 # process commandline arguments
 [CmdletBinding()]
