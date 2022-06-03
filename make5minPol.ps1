@@ -1,5 +1,12 @@
 . .\cohesity-api.ps1
-#apiauth -vip ve2 -username admin -domain local -password $null
+
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
+    [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
+    [Parameter(Mandatory = $True)][string]$password = '',  # local or AD domain password
+)
+apiauth -vip $vip -username $username -domain local -password $password
 
 $policyParams = @{
     "backupPolicy" = @{
