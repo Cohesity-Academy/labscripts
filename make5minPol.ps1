@@ -1,5 +1,5 @@
 . .\cohesity-api.ps1
-apiauth -vip ve2 -username admin -domain local -password $null
+#apiauth -vip ve2 -username admin -domain local -password $null
 
 $policyParams = @{
     "backupPolicy" = @{
