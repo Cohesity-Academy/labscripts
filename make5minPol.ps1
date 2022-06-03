@@ -8,7 +8,12 @@ param (
     [Parameter(Mandatory = $True)][string]$frequency = '',  # backup in min   
     [Parameter(Mandatory = $True)][string]$name = '',  # name of policy
 )
-apiauth -vip $vip -username $username -domain local -password $password
+
+# source the cohesity-api helper code
+. $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
+
+# authenticate
+apiauth -vip $vip -username $username -domain $domain -password $password
 
 $policyParams = @{
     "backupPolicy" = @{
@@ -17,7 +22,7 @@ $policyParams = @{
                 "schedule" = @{
                     "unit" = "Minutes";
                     "minuteSchedule" = @{
-                        "frequency" = #frequency
+                        "frequency" = $frequency
                     }
                 }
             };
