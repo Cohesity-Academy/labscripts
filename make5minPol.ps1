@@ -1,5 +1,6 @@
-.\cohesity-api.ps1
+# usage: ./protectPhysicalLinux.ps1 -vip mycluster -username myusername -password mypassword -Name policyname -frequency frequencyinminutes
 
+# process commandline arguments
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
