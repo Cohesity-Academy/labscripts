@@ -5,6 +5,8 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
     [Parameter(Mandatory = $True)][string]$password = '',  # local or AD domain password
+    [Parameter(Mandatory = $True)][string]$frequency = '',  # backup in min   
+    [Parameter(Mandatory = $True)][string]$name = '',  # name of policy
 )
 apiauth -vip $vip -username $username -domain local -password $password
 
@@ -15,7 +17,7 @@ $policyParams = @{
                 "schedule" = @{
                     "unit" = "Minutes";
                     "minuteSchedule" = @{
-                        "frequency" = 5
+                        "frequency" = #frequency
                     }
                 }
             };
@@ -26,7 +28,7 @@ $policyParams = @{
         }
     };
     "id" = $null;
-    "name" = "5 minute policy";
+    "name" = "$name";
     "description" = $null;
     "remoteTargetPolicy" = @{};
     "retryOptions" = @{
