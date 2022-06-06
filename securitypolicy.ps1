@@ -1,4 +1,20 @@
-$myObject = @{
+# usage: ./securitypolicy.ps1 -vip mycluster -username myusername -password mypassword 
+
+# process commandline arguments
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
+    [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
+    [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password
+)
+
+# source the cohesity-api helper code
+. $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
+
+# authenticate
+apiauth -vip $vip -username $username -domain $domain -password $password
+
+$secpol = @{
     "passwordStrength" = @{
                              "minLength" = 8;
                              "includeUpperLetter" = $false;
@@ -37,3 +53,5 @@ $myObject = @{
                                  "adMapping" = "SamAccountName"
                              }
 }
+
+$newpol = api post -v2 security-config $secpol
