@@ -2,8 +2,7 @@
 #$repoURL = 'https://raw.githubusercontent.com/cohesity-academy/labscripts/main'
 #(Invoke-WebRequest -Uri "$repoUrl/$scriptName.ps1").content | Out-File "$scriptName.ps1"; (Get-Content "$scriptName.ps1") | Set-Content "$scriptName.ps1"
 #(Invoke-WebRequest -Uri "$repoUrl/cohesity-api.ps1").content | Out-File cohesity-api.ps1; (Get-Content cohesity-api.ps1) | Set-Content cohesity-api.ps1
-#./azureblob.ps1 -vip cohesity-a.cohesitylabs.az -username admin -password cohesity123 -Name "CoolBlob" -tierType "kAzureTierCool" -StorageAccountName "cool23954073" -StorageAccessKey "4fHIXz/nRiSU7NWTOh2umMGE6KCsyOu/oQ5AfI28RorIMMzVJa5LBOgCy1MHA5nvwIfPjoYKJjGB+ASt2hAYPQ==" -bucketName "cohesitystorage"
-
+#./azureblob.ps1 -vip cohesity-a.cohesitylabs.az -username user -password password -Name "CoolBlob" -tierType "kAzureTierCool" -StorageAccountName "cool####" -StorageAccessKey "thekey" -bucketName "cohesitystorage"
 
 [CmdletBinding()]
 param (
