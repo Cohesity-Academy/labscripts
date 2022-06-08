@@ -15,13 +15,7 @@ param (
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 ### authenticate
-apiauth -vip $vip -username $username -domain $domain -tenant $tenant
-
-$gcptargets = Import-Csv -Path $inputfile
-$myjson = get-content $jsonFile | ConvertFrom-Json
-$privatekey = $myjson.private_key.trim()
-$clientemail = $myjson.client_email
-$projectid = $myjson.project_id
+apiauth -vip $vip -username $username -domain $domain -password $password
 
 foreach($target in $gcptargets){
     $myObject = @{
