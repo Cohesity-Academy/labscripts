@@ -3,8 +3,12 @@ param (
     [Parameter(Mandatory = $True)][string]$vip, #the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username, #username (local or AD)
     [Parameter()][string]$domain = 'local', #local or AD domain
-    [Parameter(Mandatory = $True)][string]$jsonfile, #path to service account json file
-    [Parameter()][string]$inputfile = 'gcptargets.csv' # CSV input file with targetname, bucketname, tiertype
+    [Parameter(Mandatory = $True)][string]$tierType, #kAzureTierCool, kAzureTierHot, kAzureTierArchive
+    [Parameter(Mandatory = $True)][string]$name, #Name of Blob
+    [Parameter(Mandatory = $True)][string]$storageAccountName, #Storage Container Name
+    [Parameter(Mandatory = $True)][string]$storageAccessKey, #Storage Access Key
+    [Parameter(Mandatory = $True)][string]$bucketName #Storage Container name
+    
 )
 
 ### source the cohesity-api helper code
@@ -19,52 +23,34 @@ $privatekey = $myjson.private_key.trim()
 $clientemail = $myjson.client_email
 $projectid = $myjson.project_id
 
-$myObject = @{
-    "id" = 55273;
-    "name" = "CoolBlob";
-    "externalTargetType" = "kAzure";
-    "config" = @{
-                   "bucketName" = "cohesitystorage";
-                   "azure" = @{
-                                 "storageAccountName" = "cool23954073";
-                                 "tierType" = "kAzureTierCool";
-                                 "tiers" = @(
-                                               "kAzureTierHot";
-                                               "kAzureTierCool";
-                                               "kAzureTierArchive"
-                                           )
-                             }
-               };
-    "compressionPolicy" = "kCompressionLow";
-    "encryptionPolicy" = "kEncryptionNone";
-    "usageType" = "kArchival";
-    "dedupEnabled" = $true;
-    "incrementalArchivesEnabled" = $true;
-    "fullArchiveIntervalDays" = 90;
-    "desiredWalLocation" = $null;
-    "removalState" = "kDontRemove"
-}
-
 foreach($target in $gcptargets){
     $myObject = @{
-        "compressionPolicy" = "kCompressionLow";
-        "config" = @{
-            "google" = @{
-                "tierType" = $target.tiertype;
-                "projectId" = $projectid;
-                "clientEmailAddress" = $clientemail;
-                "clientPrivateKey" = "$privatekey"
-            };
-            "bucketName" = $target.bucketname
-        };
-        "dedupEnabled" = $true;
-        "encryptionPolicy" = "kEncryptionStrong";
-        "incrementalArchivesEnabled" = $true;
-        "name" = $target.targetname;
-        "usageType" = "kArchival";
-        "customerManagingEncryptionKeys" = $false;
-        "externalTargetType" = "kGoogle"
-    }
-    "Registering target $($target.targetname) -> $($target.bucketname)"
-    $null = api post vaults $myObject
+    "compressionPolicy" = "kCompressionLow";
+    "config" = @{
+                   "azure" = @{
+                                 "tierType" = "$tierType";
+                                 "storageAccountName" = "$storageAccountName";
+                                 "storageAccessKey" = "$storageAccessKey"
+                             };
+                   "bucketName" = "$bucketName"
+               };
+    "dedupEnabled" = $true;
+    "encryptionPolicy" = "kEncryptionNone";
+    "incrementalArchivesEnabled" = $true;
+    "kmsServerId" = 0;
+    "name" = "$name";
+    "usageType" = "kArchival";
+    "kmsServiceType" = "kInternalKMS";
+    "_tierData" = @{
+                      "tier" = "kAzureTierCool";
+                      "vault" = "kAzure";
+                      "govVault" = "kAzureGovCloud";
+                      "targetType" = "kAzure"
+                  };
+    "archivalFormat" = "incremental";
+    "isAwsSnowball" = $false;
+    "isForeverIncrementalArchiveEnabled" = $false;
+    "externalTargetType" = "kAzure";
+    "_title" = "standard";
+    "_encryptionEdited" = $true
 }
