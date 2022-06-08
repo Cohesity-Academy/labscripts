@@ -19,6 +19,32 @@ $privatekey = $myjson.private_key.trim()
 $clientemail = $myjson.client_email
 $projectid = $myjson.project_id
 
+$myObject = @{
+    "id" = 55273;
+    "name" = "CoolBlob";
+    "externalTargetType" = "kAzure";
+    "config" = @{
+                   "bucketName" = "cohesitystorage";
+                   "azure" = @{
+                                 "storageAccountName" = "cool23954073";
+                                 "tierType" = "kAzureTierCool";
+                                 "tiers" = @(
+                                               "kAzureTierHot";
+                                               "kAzureTierCool";
+                                               "kAzureTierArchive"
+                                           )
+                             }
+               };
+    "compressionPolicy" = "kCompressionLow";
+    "encryptionPolicy" = "kEncryptionNone";
+    "usageType" = "kArchival";
+    "dedupEnabled" = $true;
+    "incrementalArchivesEnabled" = $true;
+    "fullArchiveIntervalDays" = 90;
+    "desiredWalLocation" = $null;
+    "removalState" = "kDontRemove"
+}
+
 foreach($target in $gcptargets){
     $myObject = @{
         "compressionPolicy" = "kCompressionLow";
