@@ -17,7 +17,6 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password
 
-foreach($target in $gcptargets){
     $myObject = @{
     "compressionPolicy" = "kCompressionLow";
     "config" = @{
@@ -47,4 +46,3 @@ foreach($target in $gcptargets){
     "externalTargetType" = "kAzure";
     "_title" = "standard";
     "_encryptionEdited" = $true
-}
