@@ -17,7 +17,7 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password
 
-    $myObject = @{
+$myObject = @{
     "compressionPolicy" = "kCompressionLow";
     "config" = @{
                    "azure" = @{
@@ -46,3 +46,5 @@ apiauth -vip $vip -username $username -domain $domain -password $password
     "externalTargetType" = "kAzure";
     "_title" = "standard";
     "_encryptionEdited" = $true
+}
+$null = api post vaults $myObject
