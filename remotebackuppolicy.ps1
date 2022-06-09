@@ -1,4 +1,4 @@
-﻿# usage: ./remotebackupolicy.ps1 -vip cohesity-a.cohesitylabs.az -username admin -password cohesity123 -Name "NAS_Policy"
+# usage: ./remotebackupolicy.ps1 -vip cohesity-a.cohesitylabs.az -username admin -password cohesity123 -Name "NAS_Policy"
 
 # process commandline arguments
 [CmdletBinding()]
