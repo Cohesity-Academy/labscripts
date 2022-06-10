@@ -16,12 +16,12 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $objects = api get /snmp/config
 
-If ($objects.readUser.userName -eq "cohesityV2Public") {
-    Set-ActivityResult -Correct
+If ($objects.server -eq "192.168.1.90" -and
+    $objects.trapUser.userName -eq "cohesityV2Public" -and
+    $objects.version -eq "kSnmpV2" -and
+    $objects.readUser.userName -eq "cohesityV2Public") {
+Write-Host "Correct"
 }
-Else {Set-ActivityResult -Incorrect}
-#$objects.server = 192.168.1.90
-#$objects.trapUser.userName = cohesityV2Public
-#$objects.version = kSnmpV2
-$objects.readUser.userName #cohesityV2Public
+Else {Write-Host "Incorrect"}
+
 
