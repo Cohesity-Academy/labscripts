@@ -14,9 +14,4 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password
 
-$report = @{}
-$sortableList = @()
-
 $objects = api get /snmp/config
-
-$objects | FL
