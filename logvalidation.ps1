@@ -14,7 +14,7 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$logobjects = api get /snmp/config
+$logobjects = api get /public/cluster
 
 If ($logobjects.clusterAuditLogConfig.RetentionPeriodDays -eq "180") {
 Write-Host "Correct"
