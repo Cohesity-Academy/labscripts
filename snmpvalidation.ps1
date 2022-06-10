@@ -5,20 +5,18 @@
 param (
     [Parameter(Mandatory = $True)][string]$vip,
     [Parameter(Mandatory = $True)][string]$username,
-    [Parameter()][string]$domain = 'local',
-    [Parameter()][int]$olderThan = 0,
-    [Parameter()][switch]$sorted
+    [Parameter(Mandatory = $True)][string]$password,
 )
 
 ### source the cohesity-api helper code
 . ./cohesity-api
 
 ### authenticate
-apiauth -vip $vip -username $username -domain $domain
+apiauth -vip $vip -username $username -password $password
 
 $report = @{}
 $sortableList = @()
 
 $objects = api get /snmp/config
 
-
+$objects | FL
