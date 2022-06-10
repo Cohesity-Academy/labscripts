@@ -5,7 +5,7 @@
 param (
     [Parameter(Mandatory = $True)][string]$vip,
     [Parameter(Mandatory = $True)][string]$username,
-    [Parameter(Mandatory = $True)][string]$password,
+    [Parameter(Mandatory = $True)][string]$password
 )
 
 ### source the cohesity-api helper code
