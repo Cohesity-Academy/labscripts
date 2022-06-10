@@ -12,6 +12,8 @@ param (
 . ./cohesity-api
 
 ### authenticate
-apiauth -vip $vip -username $username -password $password
+apiauth -vip $vip -username $username -password $password -quiet
 
 $objects = api get /snmp/config
+
+$objects.readUser.userName
