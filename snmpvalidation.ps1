@@ -1,4 +1,4 @@
-### usage: ./snapshotList.ps1 -vip mycluster -username myusername [ -domain mydomain.net ] [ -olderThan 30 ] [ -sorted ]
+### usage: ./snmpvalidation.ps1 -vip mycluster -username myusername -passsword 
 
 ### process commandline arguments
 [CmdletBinding()]
@@ -23,5 +23,3 @@ If ($objects.server -eq "192.168.1.90" -and
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
-
-
