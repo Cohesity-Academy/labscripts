@@ -14,7 +14,7 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$objectssyslogs = api -v2 get syslogs
+$objectssyslogs = api get -v2 syslogs
 
 If ($objectssyslogs.server -eq "192.168.1.90" -and
     $objectssyslogs.trapUser.userName -eq "cohesityV2Public" -and
