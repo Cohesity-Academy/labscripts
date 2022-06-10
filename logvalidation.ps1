@@ -16,7 +16,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $objects = api get /snmp/config
 
-If ($objects.cluster.AuditLogConfig.RetentionPeriodDays -eq "180") {
+If ($objects.clusterAuditLogConfig.RetentionPeriodDays -eq "180") {
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
