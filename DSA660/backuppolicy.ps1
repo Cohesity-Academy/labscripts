@@ -14,7 +14,7 @@ param (
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 # authenticate
-apiauth -vip $vip -username $username -domain $domain -password $password
+apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
 $policyParams = @{
     "backupPolicy" = @{
