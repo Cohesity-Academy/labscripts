@@ -96,7 +96,7 @@ if($skipNestedMountPoints){
 apiauth -vip $vip -username $username -domain $domain -password $password
 
 # get the protectionJob
-$jobs = api get -v2 "data-protect/protection-groups?isDeleted=false&isActive=true&environments=kPhysical&names=$jobName"
+$jobs = api get -v2 "data-protect/protection-groups?isDeleted=false&isActive=true&environments=kPhysical&names=$jobName"  -quiet
 $job = $jobs.protectionGroups | Where-Object {$_.name -ieq $jobName}
 
 $newJob = $false
