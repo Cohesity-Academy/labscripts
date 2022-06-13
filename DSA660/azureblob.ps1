@@ -2,7 +2,7 @@
 #$repoURL = 'https://raw.githubusercontent.com/cohesity-academy/labscripts/main'
 #(Invoke-WebRequest -Uri "$repoUrl/$scriptName.ps1").content | Out-File "$scriptName.ps1"; (Get-Content "$scriptName.ps1") | Set-Content "$scriptName.ps1"
 #(Invoke-WebRequest -Uri "$repoUrl/cohesity-api.ps1").content | Out-File cohesity-api.ps1; (Get-Content cohesity-api.ps1) | Set-Content cohesity-api.ps1
-#./azureblob.ps1 -vip cohesity-a.cohesitylabs.az -username user -password password -Name "CoolBlob" -tierType "kAzureTierCool" -StorageAccountName "cool####" -StorageAccessKey "thekey" -bucketName "cohesitystorage"
+#./azureblob.ps1 -vip cluster -username user -password password -Name "CoolBlob" -tierType "kAzureTierCool" -StorageAccountName "cool####" -StorageAccessKey "thekey" -bucketName "cohesitystorage"
 
 [CmdletBinding()]
 param (
@@ -21,7 +21,7 @@ param (
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 ### authenticate
-apiauth -vip $vip -username $username -domain $domain -password $password
+apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
     $myObject = @{
     "compressionPolicy" = "kCompressionLow";
