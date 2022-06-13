@@ -1,4 +1,4 @@
-# usage: ./remotebackupolicy.ps1 -vip cohesity-a.cohesitylabs.az -username admin -password cohesity123 -Name "NAS_Policy"
+# usage: ./remotebackupolicy.ps1 -vip clusername -username admin -password password -Name ""
 
 # process commandline arguments
 [CmdletBinding()]
@@ -21,7 +21,7 @@ $targetID = $out2.id
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 # authenticate
-apiauth -vip $vip -username $username -domain $domain -password $password
+apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
 
 $policyParams = @{
