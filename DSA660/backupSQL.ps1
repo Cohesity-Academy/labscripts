@@ -1,13 +1,12 @@
-# usage: ./backupolicy.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" -frequency frequencyinminutes
+# usage: ./backupSQL.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" 
 
 # process commandline arguments
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
-    [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password
-    [Parameter(Mandatory = $True)][int]$frequency,  # backup in min   
-    [Parameter(Mandatory = $True)][string]$name  # name of policy
+    [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password  
+    [Parameter(Mandatory = $True)][string]$name  # name of backup
 )
 
 # source the cohesity-api helper code
@@ -16,7 +15,7 @@ param (
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
-$jobs = api get protectionSources/ProtectedObjects
+$jobs = api get /protectionSources/ProtectedObjects
 
 $myObject = @{
     "policyId" = "8158516650510261:1575649096260:1";
@@ -39,7 +38,7 @@ $myObject = @{
     "qosPolicy" = "kBackupHDD";
     "abortInBlackouts" = $false;
     "storageDomainId" = 3203;
-    "name" = "SQLProtection";
+    "name" = "$name";
     "environment" = "kSQL";
     "isPaused" = $false;
     "description" = "";
@@ -61,19 +60,19 @@ $myObject = @{
                                                          "useAagPreferencesFromServer" = $true;
                                                          "objects" = @(
                                                                          @{
-                                                                             "id" = $job.id[0]
+                                                                             "id" = 17
                                                                          };
                                                                          @{
-                                                                             "id" = $job.id[1]
+                                                                             "id" = 18
                                                                          };
                                                                          @{
-                                                                             "id" = $job.id[2]
+                                                                             "id" = 19
                                                                          };
                                                                          @{
-                                                                             "id" = $job.id[3]
+                                                                             "id" = 20
                                                                          }
                                                                      )
                                                      }
                     }
 }
-$newsqlbackup = api post -v2 data-protect/policies $myObject
+$newsqlbackup = api post -v2 data-protect/protection-groups $myObject
