@@ -12,10 +12,11 @@ param (
 # source the cohesity-api helper code
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
+Connect-CohesityCluster -Server cohesity-a.cohesitylabs.az -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "LOCAL\admin", (ConvertTo-SecureString -AsPlainText "cohesity123" -Force))
+$SQL = Get-CohesityMSSQLObject
+
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
-
-$jobs = api get /protectionSources/ProtectedObjects
 
 $myObject = @{
     "policyId" = "8158516650510261:1575649096260:1";
@@ -60,16 +61,7 @@ $myObject = @{
                                                          "useAagPreferencesFromServer" = $true;
                                                          "objects" = @(
                                                                          @{
-                                                                             "id" = 17
-                                                                         };
-                                                                         @{
-                                                                             "id" = 18
-                                                                         };
-                                                                         @{
-                                                                             "id" = 19
-                                                                         };
-                                                                         @{
-                                                                             "id" = 20
+                                                                             "id" = ($SQL |?{$_.Name -eq "MSSQLSERVER/Cohesity_DB1"}).Id
                                                                          }
                                                                      )
                                                      }
