@@ -16,6 +16,7 @@ param (
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
+$jobs = api get protectionSources/ProtectedObjects
 
 $myObject = @{
     "policyId" = "8158516650510261:1575649096260:1";
@@ -60,18 +61,19 @@ $myObject = @{
                                                          "useAagPreferencesFromServer" = $true;
                                                          "objects" = @(
                                                                          @{
-                                                                             "id" = 18
+                                                                             "id" = $job.id[0]
                                                                          };
                                                                          @{
-                                                                             "id" = 19
+                                                                             "id" = $job.id[1]
                                                                          };
                                                                          @{
-                                                                             "id" = 20
+                                                                             "id" = $job.id[2]
                                                                          };
                                                                          @{
-                                                                             "id" = 17
+                                                                             "id" = $job.id[3]
                                                                          }
                                                                      )
                                                      }
                     }
 }
+$newsqlbackup = api post -v2 data-protect/policies $myObject
