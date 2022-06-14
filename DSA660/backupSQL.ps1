@@ -18,7 +18,7 @@ $SQL = Get-CohesityMSSQLObject
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
-$myObject = @{
+$mysqlObject = @{
     "policyId" = "8158516650510261:1575649096260:1";
     "startTime" = @{
                       "hour" = 20;
@@ -67,4 +67,4 @@ $myObject = @{
                                                      }
                     }
 }
-$newsqlbackup = api post -v2 data-protect/protection-groups $myObject
+$newsqlbackup = api post -v2 data-protect/protection-groups $mysqlObject
