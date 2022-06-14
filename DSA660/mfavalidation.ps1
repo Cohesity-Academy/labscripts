@@ -14,9 +14,10 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$logobjects = api get -v2 mfa-config
+$mfaobjects = api get -v2 mfa-config
 
-If ($logobjects.clusterAuditLogConfig.RetentionPeriodDays -eq "180") {
+If ($mfaobjects.authenticationTypes -eq "Email" -and
+    $mfaobjects.enabled -eq "True") {
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
