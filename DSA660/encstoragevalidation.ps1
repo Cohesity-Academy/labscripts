@@ -14,9 +14,9 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$encstorobjects = api get users
+$encstorobjects = api get viewBoxes
 
-If (($encstorobjects |?{$_.name -eq "sd-idd-ic-encrypt"}).storagePolicy.encryptPolicy -eq "kEncryptionStrong") {
+If (($encstorobjects |?{$_.name -eq "sd-idd-ic-encrypt"}).storagePolicy.encryptionPolicy -eq "kEncryptionStrong") {
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
