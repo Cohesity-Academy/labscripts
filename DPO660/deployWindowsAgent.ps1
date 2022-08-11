@@ -72,6 +72,7 @@ if ($installAgent) {
     $agentFile = "Cohesity_Agent_$(((api get basicClusterInfo).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
     $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
     fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
+    (Invoke-WebRequest -UseBasicParsing -Uri "$vip/physicalAgents/download?hostType=kWindows").content | Out-File "$agentFile"; (Get-Content "$agentFile") | Set-Content "$agentFile"
     $remoteFilePath = Join-Path -Path "C:\Windows\Temp" -ChildPath $agentFile
 }
 
