@@ -45,6 +45,24 @@ Function Set-ServiceAcctCreds([string]$strCompName,[string]$strServiceName,[stri
 ### authenticate
 apiauth -vip $vip -username $username -password $password -domain $domain
 
+### get sqlAccount Password
+if($serviceAccount){
+    $sqlPassword = Get-CohesityAPIPassword -vip windows -username $serviceAccount
+    if(!$sqlPassword){
+        $securePassword = Read-Host -AsSecureString -Prompt "Enter password for $serviceAccount"
+        $sqlPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR( $securePassword ))
+        if($storePassword){
+            Set-CohesityAPIPassword -vip windows -username $serviceAccount -pwd $sqlPassword
+        }
+    }
+}
+
+if($sqlCluster){
+    $entityType = 2
+}else{
+    $entityType = 1
+}
+
 ### get protection sources
 $sources = api get protectionSources/registrationInfo
 
@@ -112,5 +130,44 @@ foreach ($server in $servers){
                 continue
             } 
         }    
+    }
+
+    ### set service account
+    if($serviceAccount){
+        "`tSetting CohesityAgent Service Logon Account..."
+        Grant-UserRight -Computer $server -User $serviceAccount -Right SeServiceLogonRight
+        $null = Set-ServiceAcctCreds $server 'CohesityAgent' $serviceAccount $sqlPassword
+    }
+
+    ### register server as AD domain controller
+    if ($registerAD){
+        "`tRegistering as Active Directory Domain Controller..."
+        $phys = api get protectionSources?environments=kPhysical
+        $sourceId = ($phys.nodes | Where-Object { $_.protectionSource.name -ieq $server }).protectionSource.id
+        $adParams = @{
+            "ownerEntity" = @{
+                "id" = $sourceId
+            };
+            "appEnvVec"   = @(
+                29
+            )
+        }
+        $null = api post /applicationSourceRegistration $adParams
+    }
+
+    ### register server as SQL
+    if ($registerSQL) {
+        if (! $($sources.rootNodes | Where-Object { $_.rootNode.name -eq $server -and $_.applications.environment -eq 'kSQL' })) {
+            "`tRegistering as SQL protection source..."
+            $phys = api get protectionSources?environments=kPhysical
+            $sourceId = ($phys.nodes | Where-Object { $_.protectionSource.name -ieq $server }).protectionSource.id
+            if ($sourceId) {
+                $regSQL = @{"ownerEntity" = @{"id" = $sourceId}; "appEnvVec" = @(3)}
+                $null = api post /applicationSourceRegistration $regSQL
+            }
+            else {
+                Write-Warning "$server is not yet registered as a protection source"
+            }
+        }
     }
 }
