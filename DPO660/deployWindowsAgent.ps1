@@ -68,7 +68,7 @@ $sources = api get protectionSources/registrationInfo
 
 ### download agent installer to local host
 if ($installAgent) {
-    $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
+    $downloadsFolder = join-path -path "C:\Windows\Temp" -ChildPath downloads
     $agentFile = "Cohesity_Agent_$(((api get basicClusterInfo).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
     $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
     fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
