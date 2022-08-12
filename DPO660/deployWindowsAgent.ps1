@@ -1,4 +1,4 @@
-### usage: ./deployWindowsAgent.ps1 -vip bseltzve01 -username admin -password password -serverList ./servers.txt [ -installAgent ] [ -register ]
+### usage: ./deployWindowsAgent.ps1 -vip bseltzve01 -username admin -serverList ./servers.txt [ -installAgent ] [ -register ] [ -registerSQL ] [ -serviceAccount mydomain.net\myuser ]
 ### provide a list of servers in a text file
 ### specify any of -installAgent -register -registerSQL -serviceAccount -storePassword
 
@@ -7,13 +7,16 @@
 param (
     [Parameter(Mandatory = $True)][string]$vip, #Cohesity cluster to connect to
     [Parameter(Mandatory = $True)][string]$username, #Cohesity username
-    [Parameter()][string]$password,
     [Parameter()][string]$domain = 'local', #Cohesity user domain name
     [Parameter()][string]$serverList, #Servers to add as physical source
+    [Parameter()][string]$password,
     [Parameter()][string]$server,
     [Parameter()][switch]$storePassword,
     [Parameter()][switch]$installAgent,
     [Parameter()][switch]$register,
+    [Parameter()][switch]$registerAD,
+    [Parameter()][switch]$registerSQL,
+    [Parameter()][switch]$sqlCluster,
     [Parameter()][string]$serviceAccount = $null
 )
 
@@ -28,6 +31,7 @@ if($serverList){
     
 ### source the cohesity-api helper code
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
+Import-Module $(Join-Path -Path $PSScriptRoot -ChildPath userRights.psm1)
 
 ### function to set service account
 Function Set-ServiceAcctCreds([string]$strCompName,[string]$strServiceName,[string]$newAcct,[string]$newPass){
@@ -68,11 +72,10 @@ $sources = api get protectionSources/registrationInfo
 
 ### download agent installer to local host
 if ($installAgent) {
-    $downloadsFolder = "C:\Packages\Plugins\Microsoft.CPlat.Core.RunCommandWindows\1.1.11\Downloads"
+    $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
     $agentFile = "Cohesity_Agent_$(((api get basicClusterInfo).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
     $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
     fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
-    (Invoke-WebRequest -UseBasicParsing -Uri "https://cohesity-a/irisservices/api/v1/public/physicalAgents/download?hostType=kWindows").content | Out-File "$agentFile"; (Get-Content "$agentFile") | Set-Content "$agentFile"
     $remoteFilePath = Join-Path -Path "C:\Windows\Temp" -ChildPath $agentFile
 }
 
