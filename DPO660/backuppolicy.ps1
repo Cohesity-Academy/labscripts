@@ -38,8 +38,8 @@ $policyParams = @{
     "description" = $null;
     "remoteTargetPolicy" = @{};
     "retryOptions" = @{
-        "retries" = 3;
-        "retryIntervalMins" = 5
+        "retries" = 2;
+        "retryIntervalMins" = 1
     }
 }
 
