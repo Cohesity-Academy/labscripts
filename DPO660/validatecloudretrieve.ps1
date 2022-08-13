@@ -1,4 +1,4 @@
-﻿$connect = Connect-CohesityCluster -Server cohesity-b.cohesitylabs.az -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "LOCAL\admin", (ConvertTo-SecureString -AsPlainText "cohesity123" -Force))
+$connect = Connect-CohesityCluster -Server cohesity-b.cohesitylabs.az -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "LOCAL\admin", (ConvertTo-SecureString -AsPlainText "cohesity123" -Force))
 $out = Get-CohesityProtectionJob
 
 If (($out |?{$_.Name -eq "HyperVCloudProtection"}).Name -eq "HyperVCloudProtection"){
