@@ -1,4 +1,4 @@
-﻿### usage: ./validation.ps1 -vip mycluster -username myusername -passsword 
+### usage: ./validation.ps1 -vip mycluster -username myusername -passsword 
 
 ### process commandline arguments
 [CmdletBinding()]
