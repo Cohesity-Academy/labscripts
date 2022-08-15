@@ -14,7 +14,7 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$objects = api get -v2 data-protect/recoveries
+$objects = api get protectionJobs
 
 If (($objects |?{$_.name -eq "HyperVReplicationProtection"}).sourceids.count -ge 2){
 Write-Host "Correct"
