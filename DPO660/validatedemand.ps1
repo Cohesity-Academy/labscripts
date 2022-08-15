@@ -14,9 +14,11 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$objects = api get protectionJobs
+$jobs = api get protectionJobs
 
-If (($objects |?{$_.name -eq "HyperVReplicationProtection"}).sourceids.count -ge 2){
+$id = ($jobs |?{$_.name -eq "HyperVReplicationProtection"}).id
+$objects= api get protectionRuns?jobId=$id
+If (($objects |?{$_.backupRun.sourceBackupStatus.source.name -eq "copy-Guest-VM-1"}){
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
