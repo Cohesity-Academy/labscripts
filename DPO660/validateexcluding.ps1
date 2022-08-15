@@ -16,7 +16,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $objects = api get -v2 data-protect/protection-groups
 
-If ((($objects |?{$_.protectionGroups.name -eq "WindowsProtection"}).protectionGroups.physicalParams.fileProtectionTypeParams.objects.filePaths.excludedPaths) -eq "/C/Users/Coh-Student.COHESITYLABS/Documents/Cohesity/Images"){
+If (($objects |?{$_.protectionGroups.name -eq "WindowsProtection"}).protectionGroups.physicalParams.fileProtectionTypeParams.objects.filePaths.excludedPaths -eq "/C/Users/Coh-Student.COHESITYLABS/Documents/Cohesity/Images"){
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
