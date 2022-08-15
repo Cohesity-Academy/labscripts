@@ -18,7 +18,7 @@ $jobs = api get protectionJobs
 
 $id = ($jobs |?{$_.name -eq "HyperVReplicationProtection"}).id
 $objects= api get protectionRuns?jobId=$id
-If (($objects |?{$_.backupRun.sourceBackupStatus.source.name -eq "copy-Guest-VM-1"}){
+If ($objects |?{$_.backupRun.sourceBackupStatus.source.name -eq "copy-Guest-VM-1"}){
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
