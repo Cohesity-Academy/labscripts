@@ -5,6 +5,7 @@
 param (
     [Parameter(Mandatory = $True)][string]$vip,       # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
+    [Parameter(Mandatory = $True)][string]$password,  # password (local or AD)
     [Parameter()][string]$domain = 'local',           # local or AD domain
     [Parameter(Mandatory = $True)][string]$viewName,  # name of view to create
     [Parameter()][string]$storageDomain = 'DefaultStorageDomain',  # name of storage domain in which to create view
@@ -21,7 +22,7 @@ param (
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 ### authenticate
-apiauth -vip $vip -username $username -domain $domain
+apiauth -vip $vip -username $username -password $password -domain $domain
 
 ### find storage domain
 $sd = api get viewBoxes | Where-Object name -eq $storageDomain
