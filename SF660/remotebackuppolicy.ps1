@@ -13,7 +13,7 @@ Connect-CohesityCluster -Server cohesity-a.cohesitylabs.az -Credential (New-Obje
 $out1 = Get-CohesityRemoteCluster
 $clusterId = $out1.ClusterId
 $clusterName = $out1.Name
-$out2 = Get-CohesityVault -VaultName CoolBlob
+$out2 = Get-CohesityVault -VaultName Az-Cool-Blob-Archive
 $targetName = $out2.name
 $targetID = $out2.id
 
