@@ -7,7 +7,7 @@ param (
     [Parameter()][string]$username = 'helios',
     [Parameter()][string]$domain = 'local',  # local or AD domain
     [Parameter()][switch]$useApiKey,
-    [Parameter()][string]$password 
+    [Parameter()][string]$password, 
     [Parameter()][switch]$mcm,
     [Parameter()][string]$mfaCode = $null,
     [Parameter()][switch]$emailMfaCode,
