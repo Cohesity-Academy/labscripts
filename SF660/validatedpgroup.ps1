@@ -16,7 +16,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $objectsdpgroups = api get -v2 data-protect/protection-groups
 
-If ($objectsdpgroups.protectionGroups[3].name -eq "Prod-DL-Judge-Dredd") {
+If ($objectsdpgroups |?{$_.protectionGroups.name -eq "Prod-DL-Judge-Dredd"}) {
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
