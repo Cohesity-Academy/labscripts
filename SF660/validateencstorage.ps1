@@ -16,7 +16,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $encstorobjects = api get viewBoxes
 
-If (($encstorobjects |?{$_.name -eq "sd-idd-ic-encrypt"}).storagePolicy.encryptionPolicy -eq "kEncryptionStrong") {
+If (($encstorobjects |?{$_.name -eq "Kryptonite"}).storagePolicy.encryptionPolicy -eq "kEncryptionStrong") {
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
