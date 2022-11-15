@@ -14,9 +14,11 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -password $password -quiet
 
-$pol = api get -v2 data-protect/policies
+$jobs = api get protectionJobs
+$id = ($jobs |?{$_.name -eq "Protect_SMB_Home"}).id
+$objects= api get protectionRuns?jobId=$id
 
-If (($pol |?{$_.policies.name -eq "silver"}).policies.remotetargetPolicy.archivalTargets.targetName -eq  "Az-Cool-Blob-Archive"){
+If ($objects |?{$_.copyrun.target.type -eq "kArchival"}){
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
