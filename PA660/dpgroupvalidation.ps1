@@ -16,8 +16,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $objectsdpgroups = api get -v2 data-protect/protection-groups
 
-If ($objectsdpgroups.protectionGroups[0].name -eq "Ransomware" -and
-    $objectsdpgroups.protectionGroups[1].name -eq "NasProtection" -and
+If ($objectsdpgroups.protectionGroups[0].name -eq "Frequent" -and
     $objectsdpgroups.protectionGroups[2].name -eq "SQLProtection") {
 Write-Host "Correct"
 }
