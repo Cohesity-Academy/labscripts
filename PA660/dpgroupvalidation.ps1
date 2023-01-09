@@ -17,7 +17,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 $objectsdpgroups = api get -v2 data-protect/protection-groups
 
 If (($objectsdpgroups |?{$._protectionGroups.name -eq "Frequent"}) -and
-    ($objectsdpgroups  |?{$._protectionGroups.name -eq "SQLProtection")){
+    ($objectsdpgroups |?{$._protectionGroups.name -eq "SQLProtection")){
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
