@@ -17,11 +17,8 @@ echo -e "\r\n Starting full backup of $ORACLE_SID database at $DATE. \r\n"
 $RMAN target /msglog $LOGFILE << EOF
 
 RUN {
-
-      CONFIGURE DEVICE TYPE DISK PARALLELISM 1;
-      ALLOCATE CHANNEL f1 DEVICE TYPE DISK FORMAT='/mnt/oracle-stnd-1/%d_D_%T_$u_s%s_p%p';
-      BACKUP DATABASE PLUS ARCHIVELOG;
-      
+      CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT '/mnt/oracle-stnd-1/%d_D_%T_$u_s%s_p%p';
+      BACKUP AS BACKUPSET DATABASE PLUS ARCHIVELOG;
       }
 EOF
 
