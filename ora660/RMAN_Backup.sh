@@ -1,5 +1,5 @@
 ORACLE_SID=CohesityDB1
-ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE
 PATH=$ORACLE_HOME/bin:$PATH
 RMAN=$ORACLE_HOME/bin/rman
 TAG="$ORACLE_SID_"'data +%Y%m%d%H%M'
