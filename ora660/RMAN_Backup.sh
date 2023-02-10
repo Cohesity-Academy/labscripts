@@ -1,4 +1,4 @@
-ORACLE_SID=CohesityDB1
+ORACLE_SID=XE
 ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE
 PATH=$ORACLE_HOME/bin:$PATH
 RMAN=$ORACLE_HOME/bin/rman
@@ -14,7 +14,7 @@ LOGFILE="$LOGDIR/$(date +%Y-%m-%d-%T)_full_backup.log"
 
 echo -e "\r\n Starting full backup of $ORACLE_SID database at $DATE. \r\n"
 
-$RMAN target /msglog $LOGFILE << EOF
+$RMAN target / msglog $LOGFILE << EOF
 
 RUN {
       CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT '/mnt/oracle-stnd-1/%d_D_%T_$u_s%s_p%p';
