@@ -18,7 +18,7 @@ param (
 $synced = $false
 while($synced -eq $false){
     Start-Sleep -Seconds 10
-    apiauth -vip $vip -username $username -domain $domain -password $password -quiet
+    apiauth -vip $vip -username $username -password $password -quiet
     if($AUTHORIZED -eq $true){
         $stat = api get /nexus/cluster/status
         if($stat.isServiceStateSynced -eq $true){
