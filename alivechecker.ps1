@@ -14,13 +14,11 @@ param (
 ### source the cohesity-api helper code
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
-### authenticate
-apiauth -vip $vip -username $username -domain $domain -password $password -quiet
-
+### Cohesity status checker
 $synced = $false
 while($synced -eq $false){
     Start-Sleep -Seconds 10
-    apiauth -vip $ip -username admin -password admin -quiet
+    apiauth -vip $vip -username $username -domain $domain -password $password -quiet
     if($AUTHORIZED -eq $true){
         $stat = api get /nexus/cluster/status
         if($stat.isServiceStateSynced -eq $true){
@@ -28,4 +26,4 @@ while($synced -eq $false){
         }
     }    
 }
-write-host "Cluster setup complete"
+write-host "Cluster $vip is READY!!!"
