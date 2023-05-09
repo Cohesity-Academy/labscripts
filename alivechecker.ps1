@@ -1,26 +1,21 @@
-### process commandline arguments
+#$scriptName = 'alivechecker'
+#$repoURL = 'https://raw.githubusercontent.com/cohesity-academy/labscripts/main/'
+#(Invoke-WebRequest -Uri "$repoUrl/$scriptName.ps1").content | Out-File "$scriptName.ps1"; (Get-Content "$scriptName.ps1") | Set-Content "$scriptName.ps1"
+#(Invoke-WebRequest -Uri "$repoUrl/cohesity-api.ps1").content | Out-File cohesity-api.ps1; (Get-Content cohesity-api.ps1) | Set-Content cohesity-api.ps1
+#./alivechecker.ps1 -vip clusteripname -username user -password password
+
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory = $True)][string]$ip,            # ip address of the node
-    [Parameter(Mandatory = $True)][string]$netmask,       # subnet mask
-    [Parameter(Mandatory = $True)][string]$gateway,       # default gateway
-    [Parameter(Mandatory = $True)][String[]]$dnsServers,  # dns servers
-    [Parameter(Mandatory = $True)][String[]]$ntpServers,  # ntp servers
-    [Parameter(Mandatory = $True)][string]$clusterName,   # Cohesity cluster name
-    [Parameter(Mandatory = $True)][string]$clusterDomain, # DNS domain of Cohesity cluster
-    [Parameter(Mandatory = $True)][string]$pwd,           # new admin password
-    [Parameter(Mandatory = $True)][string]$adminEmail,    # admin email address
-    [Parameter(Mandatory = $True)][string]$adDomain,      # AD domain to join
-    [Parameter(Mandatory = $True)][array]$preferredDC,   # preferred domain controller
-    [Parameter()][string]$adOu = 'Computers',             # canonical name of container/OU
-    [Parameter(Mandatory = $True)][string]$adAdmin,       # AD admin account name
-    [Parameter(Mandatory = $True)][string]$adPwd,         # AD admin password
-    [Parameter(Mandatory = $True)][string]$adAdminGroup,  # AD admin group to add
-    [Parameter(Mandatory = $True)][string]$timezone,      # timezone
-    [Parameter(Mandatory = $True)][string]$smtpServer,    # smtp server address
-    [Parameter(Mandatory = $True)][string]$supportPwd,    # support account new ssh password
-    [Parameter(Mandatory = $True)][string]$alertEmail     # email address for critical alerts
+    [Parameter(Mandatory = $True)][string]$vip, #the cluster to connect to (DNS name or IP)
+    [Parameter(Mandatory = $True)][string]$username, #username (local or AD)
+    [Parameter(Mandatory = $True)][string]$password   
 )
+
+### source the cohesity-api helper code
+. $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
+
+### authenticate
+apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
 $synced = $false
 while($synced -eq $false){
@@ -33,3 +28,4 @@ while($synced -eq $false){
         }
     }    
 }
+write-host "Cluster setup complete"
