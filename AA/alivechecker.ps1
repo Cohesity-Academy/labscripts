@@ -2,7 +2,7 @@
 #$repoURL = 'https://raw.githubusercontent.com/cohesity-academy/labscripts/main/AA'
 #(Invoke-WebRequest -Uri "$repoUrl/$scriptName0.ps1").content | Out-File "$scriptName0.ps1"; (Get-Content "$scriptName0.ps1") | Set-Content "$scriptName0.ps1"
 #(Invoke-WebRequest -Uri "$repoUrl/cohesity-api.ps1").content | Out-File cohesity-api.ps1; (Get-Content cohesity-api.ps1) | Set-Content cohesity-api.ps1
-#./alivechecker.ps1 -vip clusteripname -username user -password password
+#.\alivechecker.ps1 -vip clusteripname -username user -password password
 
 [CmdletBinding()]
 param (
