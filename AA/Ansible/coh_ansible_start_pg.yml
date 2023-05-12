@@ -16,5 +16,5 @@
         password: "{{ cohesity_password }}"
         validate_certs: "{{ cohesity_validate_certs }}"
         state: "started"
-        name: "Virtual"
-        environment: "VMware"
+        name: "MixedView"
+        environment: "View"
