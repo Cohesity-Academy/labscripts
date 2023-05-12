@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Start in nfs-server with:
-# wget -N https://files.techaccelerator.com/cohesity/public/scripts/ansible/talabs_coh_ansible_setup.sh
+# wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/talabs_coh_ansible_setup.sh
 # sh ./talabs_coh_ansible_setup.sh
 #
 # Update all linux packages if required
@@ -43,9 +43,9 @@ wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/tala
 #
 # Run the sample protection group job for the predefined Virtual protection group on cohesity-a VE cluster 
 #
-#ansible-playbook ./talabs_coh_ansible_start_pg.yml --extra-vars "cohesity_server='172.16.3.101' cohesity_username='admin' cohesity_password='TechAccel1!' cohesity_validate_certs='false'"
+#ansible-playbook ./talabs_coh_ansible_start_pg.yml --extra-vars "cohesity_server='192.168.1.100' cohesity_username='admin' cohesity_password='cohesity123' cohesity_validate_certs='false'"
 #
-#ansible-playbook ./talabs_coh_ansible_cluster_facts.yml --extra-vars "cohesity_server='172.16.3.101' cohesity_username='admin' cohesity_password='TechAccel1!' cohesity_validate_certs='false'"
+#ansible-playbook ./talabs_coh_ansible_cluster_facts.yml --extra-vars "cohesity_server='192.168.1.100' cohesity_username='admin' cohesity_password='cohesity123' cohesity_validate_certs='false'"
 #
 # Read the Cohesity Facts .json file
 #
