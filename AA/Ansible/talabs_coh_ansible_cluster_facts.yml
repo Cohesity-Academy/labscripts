@@ -1,0 +1,24 @@
+# => Collection: cohesity.dataprotect
+# =>
+# => Start a protection job run.
+---
+  - hosts: localhost
+    connection: local
+    gather_facts: false
+    collections:
+      - cohesity.dataprotect
+  
+    tasks:
+    - name: Gather Cohesity Cluster Facts
+      cohesity_facts:
+        cluster: "{{ cohesity_server }}"
+        username: "{{ cohesity_username }}"
+        password: "{{ cohesity_password }}"
+        validate_certs: "{{ cohesity_validate_certs }}"
+        state: complete
+        include_deleted: false
+      register: cohesity
+
+    - name: "Write the Collected Facts to cohesity_facts.json"
+      local_action: copy content="{{ cohesity | to_nice_json }}" dest="cohesity_facts.json"
+        
