@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # Start in nfs-server with:
-# wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/talabs_coh_ansible_setup.sh
-# sh ./talabs_coh_ansible_setup.sh
+# wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_setup.sh
+# sh ./coh_ansible_setup.sh
 #
 # Update all linux packages if required
 # yum -y update
@@ -34,18 +34,18 @@ mkdir -p coh_ansible
 #
 cd coh_ansible
 #
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/talabs_coh_ansible_start_pg.yml
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/talabs_coh_ansible_start_pg.sh
+wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_start_pg.yml
+wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_start_pg.sh
 #
 # Get a sample Ansible playbook to gather Cohesity cluster facts
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/talabs_coh_ansible_cluster_facts.yml
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/talabs_coh_ansible_cluster_facts.sh
+wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_cluster_facts.yml
+wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_cluster_facts.sh
 #
 # Run the sample protection group job for the predefined Virtual protection group on cohesity-a VE cluster 
 #
-#ansible-playbook ./talabs_coh_ansible_start_pg.yml --extra-vars "cohesity_server='192.168.1.100' cohesity_username='admin' cohesity_password='cohesity123' cohesity_validate_certs='false'"
+#ansible-playbook ./coh_ansible_start_pg.yml --extra-vars "cohesity_server='192.168.1.100' cohesity_username='admin' cohesity_password='cohesity123' cohesity_validate_certs='false'"
 #
-#ansible-playbook ./talabs_coh_ansible_cluster_facts.yml --extra-vars "cohesity_server='192.168.1.100' cohesity_username='admin' cohesity_password='cohesity123' cohesity_validate_certs='false'"
+#ansible-playbook ./_ansible_cluster_facts.yml --extra-vars "cohesity_server='192.168.1.100' cohesity_username='admin' cohesity_password='cohesity123' cohesity_validate_certs='false'"
 #
 # Read the Cohesity Facts .json file
 #
