@@ -7,6 +7,8 @@
 # Update all linux packages if required
 # yum -y update
 # 
+#sudo apt update
+#sudo apt install python3-pip
 #
 # Install Python3 required by pip3 and Ansible
 #
@@ -20,11 +22,14 @@ pip3 install pip --upgrade
 #
 pip3 install ansible
 #
+##sudo apt install ansible
+#
 # Install Cohesity Ansible module
 #
 ansible-galaxy collection install cohesity.dataprotect
 #
 # Install Cohesity SDK
+#
 #
 pip3 install cohesity-management-sdk
 #
