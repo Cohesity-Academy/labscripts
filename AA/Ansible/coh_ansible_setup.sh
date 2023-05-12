@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Start in nfs-server with:
-# wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_setup.sh
+# wget -N https://raw.githubusercontent.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_setup.sh
 # sh ./coh_ansible_setup.sh
 #
 # Update all linux packages if required
@@ -34,12 +34,12 @@ mkdir -p coh_ansible
 #
 cd coh_ansible
 #
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_start_pg.yml
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_start_pg.sh
+wget -N https://raw.githubusercontent.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_start_pg.yml
+wget -N https://raw.githubusercontent.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_start_pg.sh
 #
 # Get a sample Ansible playbook to gather Cohesity cluster facts
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_cluster_facts.yml
-wget -N https://github.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_cluster_facts.sh
+wget -N https://raw.githubusercontent.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_cluster_facts.yml
+wget -N https://raw.githubusercontent.com/Cohesity-Academy/labscripts/blob/main/AA/Ansible/coh_ansible_cluster_facts.sh
 #
 # Run the sample protection group job for the predefined Virtual protection group on cohesity-a VE cluster 
 #
