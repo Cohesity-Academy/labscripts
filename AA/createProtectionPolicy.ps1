@@ -5,6 +5,7 @@
 param (
     [Parameter(Mandatory = $True)][string]$vip, #Cohesity cluster to connect to
     [Parameter(Mandatory = $True)][string]$username, #Cohesity username
+    [Parameter(Mandatory = $True)][string]$password, #Cohesity password
     [Parameter()][string]$domain = 'local', #Cohesity user domain name
     [Parameter(Mandatory = $True)][string]$policyName, #Name of the policy to manage
     [Parameter(Mandatory = $True)][int]$daysToKeep,
@@ -15,7 +16,7 @@ param (
 . ./cohesity-api
 
 ### authenticate
-apiauth -vip $vip -username $username -domain $domain
+apiauth -vip $vip -username $username -password $password
 
 ### get existing policies
 $policies = api get protectionPolicies | Where-Object name -eq $policyName
