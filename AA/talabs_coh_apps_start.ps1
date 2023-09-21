@@ -1,7 +1,7 @@
 <#
 TechAccelerator Labs App Start and Stop
 -------------------------------------
-This script starts and stops apps on the TA VM cohesity-01.
+This script starts and stops apps on the TA VM Cohesity-A.
 
 The blue button to call this would be as follows:
  
@@ -42,17 +42,17 @@ Write-Output "Finished processing arguments" | Out-File $clog -Append
 
 #Global variables
 $dpVersion = Get-Variable -Name "var1" -ValueOnly
-$restApiRootUrlCoh1 = "https://cohesity-01.talabs.local/irisservices/api/v1/public"
+$restApiRootUrlCoh1 = "https://Cohesity-A.cohesitylabs.az/irisservices/api/v1/public"
 $targetApp = Get-Variable -Name "var2" -ValueOnly
 
-#Get access token for cohesity-01
-Write-Output "`nConnecting to cohesity-01 cluster ..." | Out-File $clog -Append
+#Get access token for Cohesity-A
+Write-Output "`nConnecting to Cohesity-A cluster ..." | Out-File $clog -Append
 Write-Output "Getting access token" | Out-File $clog -Append
 if ($dpVersion -match "650") {
     $response = & "curl.exe" "--ssl-no-revoke" -X POST "$restApiRootUrlCoh1/accessTokens" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \`"domain\`": \`"local\`", \`"password\`": \`"admin\`", \`"username\`": \`"admin\`"}"
 } else {
     if ($dpVersion -match "651") {
-        $response = & "curl.exe" "--ssl-no-revoke" -X POST "$restApiRootUrlCoh1/accessTokens" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \`"domain\`": \`"local\`", \`"password\`": \`"TechAccel1!\`", \`"username\`": \`"admin\`"}"
+        $response = & "curl.exe" "--ssl-no-revoke" -X POST "$restApiRootUrlCoh1/accessTokens" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \`"domain\`": \`"local\`", \`"password\`": \`"cohesity123\`", \`"username\`": \`"admin\`"}"
     } else {
         Write-Output "ERROR: Could not determine DataPlatform version for lab instance!" | Out-File $clog -Append
         Write-Output "ERROR: Could not determine DataPlatform version for lab instance!" | Out-File $clog -Append
@@ -61,18 +61,18 @@ if ($dpVersion -match "650") {
 Write-Output "Response:`n$response" | Out-File $clog -Append
 $response = $response -split "`""
 $cohesityAccessTokenCoh1 = $response[3]
-Write-Output "Cohesity-01 Access token: $cohesityAccessTokenCoh1" | Out-File $clog -Append
-Write-Output "Connected to cohesity-01 cluster" | Out-File $clog -Append
+Write-Output "Cohesity-A Access token: $cohesityAccessTokenCoh1" | Out-File $clog -Append
+Write-Output "Connected to Cohesity-A cluster" | Out-File $clog -Append
 
 Function GetInstalledApps{
-    Write-Output "`nChecking available apps on the cohesity-01 cluster ..." | Out-File $clog -Append
+    Write-Output "`nChecking available apps on the Cohesity-A cluster ..." | Out-File $clog -Append
     $installed_apps_raw = & "curl.exe" "--ssl-no-revoke" -X GET "$restApiRootUrlCoh1/apps" -H "Authorization: Bearer $cohesityAccessTokenCoh1" -H "accept: application/json"
     $installed_apps_json = ConvertFrom-Json -InputObject $installed_apps_raw
     return $installed_apps_json
 }
 
 Function GetAppInstances{
-    Write-Output "`nChecking running app instances on the cohesity-01 cluster ..." | Out-File $clog -Append
+    Write-Output "`nChecking running app instances on the Cohesity-A cluster ..." | Out-File $clog -Append
     $app_instances_raw = & "curl.exe" "--ssl-no-revoke" -X GET "$restApiRootUrlCoh1/appInstances" -H "Authorization: Bearer $cohesityAccessTokenCoh1" -H "accept: application/json"
     $app_instances_json = ConvertFrom-Json -InputObject $app_instances_raw
     return $app_instances_json
@@ -129,7 +129,7 @@ Function StartSpotlight {
 }
 
 Function GetViews {
-    Write-Output "`nGetting views on cohesity-01 cluster ..." | Out-File $clog -Append
+    Write-Output "`nGetting views on Cohesity-A cluster ..." | Out-File $clog -Append
     $views_raw = & "curl.exe" "--ssl-no-revoke" -X GET "$restApiRootUrlCoh1/views" -H "Authorization: Bearer $cohesityAccessTokenCoh1" -H "accept: application/json"
     $views_json = ConvertFrom-Json -InputObject $views_raw
     return $views_json.views
