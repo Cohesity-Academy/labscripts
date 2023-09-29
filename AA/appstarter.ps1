@@ -46,18 +46,18 @@ $myObject = @{
     "appVersion" = $version;
     "description" = "";
     "settings" = @{
-    "vmNumReplicasList" = "[]";
+    "vmNumReplicasList" = @();
     "qosTier" = "kLow";
     "protectedObjectPrivileges" = @{
         "protectedObjectPrivilegesType" = "kNone"
         };
         "readViewPrivileges" = @{
         "privilegesType" = "kSpecific";
-        "viewIds" = "[$insight_view_id]"
+        "viewIds" = @($insight_view_id)
         };
         "readWriteViewPrivileges" = @{
         "privilegesType" = "kSpecific";
-        "viewIds" = "[]"
+        "viewIds" = @()
         }
     }
 }
