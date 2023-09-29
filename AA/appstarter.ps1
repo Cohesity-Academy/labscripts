@@ -1,12 +1,12 @@
 ### process commandline arguments
 [CmdletBinding()]
 param (
-    [Parameter()][string]$vip = 'cohesity-a.cohesitylabs.az',  # endpoint to connect to
+    [Parameter()][string]$vip = 'cohesity.cluster.local',  # endpoint to connect to
     [Parameter()][string]$username = 'admin',  # username for authentication / password storage
     [Parameter()][string]$domain = 'local',  # local or AD domain
-    [Parameter()][string]$password = 'cohesity123',  # send password / API key via command line (not recommended)
+    [Parameter()][string]$password = 'yourpassword',  # send password / API key via command line (not recommended)
     [Parameter()][string]$clusterName = $null,  # cluster name to connect to when connected to Helios/MCM
-    [Parameter()][string]$targetApp = 'Spotlight' # TargetApps: ClamAV, Insight or Spotlight
+    [Parameter()][string]$targetApp = 'apps_name' # TargetApps: ClamAV, Insight or Spotlight
 )
 
 # source the cohesity-api helper code
