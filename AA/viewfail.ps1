@@ -25,8 +25,6 @@ if ($action -eq "failover") {
 }
 
 #Script variables
-$username = "admin"
-$password = "Cohesity123"
 $domain = "local"
 $viewName = "SMB_Home_Drive"
 
