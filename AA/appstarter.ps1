@@ -100,7 +100,7 @@ if ($targetApp -eq "ClamAV") {
 } elseif ($targetApp -eq "Insight") {
     StartInsight
 } else {
-    Write-Output "`nUnsupported target app: $targetApp" | Out-File $clog -Append
+    Write-Output "`nUnsupported target app: $targetApp" 
 }
 
 
