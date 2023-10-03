@@ -1,7 +1,7 @@
 ### process commandline arguments
 [CmdletBinding()]
 param (
-    [Parameter()][string]$vip = 'cohesity-a.cohesitylabs.az',  # endpoint to connect to
+    [Parameter()][string]$vip = 'cohesity-b.cohesitylabs.az',  # endpoint to connect to
     [Parameter()][string]$username = 'admin',  # username for authentication / password storage
     [Parameter()][string]$domain = 'local',  # local or AD domain
     [Parameter()][string]$password = 'cohesity123',  # send password / API key via command line (not recommended)
@@ -20,13 +20,15 @@ param (
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 # authenticate
-apiauth -vip $vip2 -username $username2 -password $passwor2d -domain $domain2
+apiauth -vip $vip -username $username -password $password -domain $domain
 
 
 $response = api get -v2 file-services/views
 $result = $response.views | Where-Object { $_.name -eq $viewName }
 
 function PrepFailover{}
+Connect-CohesityCluster -Server $vip2 -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$domain2\$username2", (ConvertTo-SecureString -AsPlainText "$password2" -Force))
+suspend-cohesityprotectionjob -Name $jobname 
     $viewObj = $result
     $viewID = $viewObj.viewId
     $params = @{
