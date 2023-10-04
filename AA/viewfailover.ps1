@@ -41,7 +41,7 @@ suspend-cohesityprotectionjob -Name $jobname
         }
     }
 #    $params = $params | ConvertTo-Json -Depth 99
-    api post -v2 data-protect/failover/views/$viewID $params]
+    api post -v2 data-protect/failover/views/$viewID $params
 }
 
 function DoFailover {
