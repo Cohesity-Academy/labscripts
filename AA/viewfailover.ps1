@@ -64,7 +64,7 @@ if ($action -eq "PrepFailover") {
 } elseif ($action -eq "DoFailover") {
     DoFailover
 } else {
-    Write-Output "`nUnsupported target app: $targetApp" 
+    Write-Output "`nUnsupported target app: $action" 
 }
 
 
