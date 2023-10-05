@@ -1,5 +1,20 @@
+
+
+Connect-CohesityCluster -Server cohesity-b.cohesitylabs.az -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "local\admin", (ConvertTo-SecureString -AsPlainText "cohesity123" -Force))
+$admininfo = Get-CohesityUser -Names admin
+$vip = "Cohesity-a.cohesitylabs.az"
+$username = "admin"
+$password = "cohesity123"
+$s3endpoint = "cohesity-b.cohesitylabs.az:3000"
+$name = "S3CloudStorage"
+$bucketName = "S3CloudStorage"
+$accessKeyId = $admininfo.S3AccessKeyId
+$secretAccessKey = $admininfo.S3SecretKey
+
+apiauth -vip $vip -username $username -password $password -domain $domain
+
 $myObject = @{
-    "name" = "S3CloudStorage";
+    "name" = "$name";
     "purposeType" = "Archival";
     "compression" = "Low";
     "archivalParams" = @{
@@ -10,12 +25,10 @@ $myObject = @{
                                               "enableAdditionalSecurity" = $false
                                           };
                            "s3CompParams" = @{
-                                                "bucketName" = "S3CloudStorage";
-                                                "accessKeyId" = "nYSpV_nv1-hg0Wbm4rwy3Pvtda-1iQiUbsh24Sr
-m86o";
-                                                "secretAccessKey" = "1yVcchHXVCgGqP3na-b9onbrFxxQBcQf9jP
-j917G1P0";
-                                                "endPoint" = "cohesity-b.cohesitylabs.az:3000";
+                                                "bucketName" = "$bucketName";
+                                                "accessKeyId" = "$accessKeyId";
+                                                "secretAccessKey" = "$secretAccessKey";
+                                                "endPoint" = "$s3endpoint";
                                                 "secureConnection" = $true;
                                                 "signatureVersion" = 2;
                                                 "isAwsSnowball" = $false;
@@ -25,3 +38,5 @@ j917G1P0";
                                             }
                        }
 }
+
+api post -v2 data-protect/external-targets $myObject
