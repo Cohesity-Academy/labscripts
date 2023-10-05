@@ -27,8 +27,8 @@ $response = api get -v2 file-services/views
 $result = $response.views | Where-Object { $_.name -eq $viewName }
 
 function PrepFailover{
-Connect-CohesityCluster -Server $vip2 -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$domain2\$username2", (ConvertTo-SecureString -AsPlainText "$password2" -Force))
-suspend-cohesityprotectionjob -Name $jobname 
+#Connect-CohesityCluster -Server $vip2 -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$domain2\$username2", (ConvertTo-SecureString -AsPlainText "$password2" -Force))
+#suspend-cohesityprotectionjob -Name $jobname 
     $viewObj = $result
     $viewID = $viewObj.viewId
     $params = @{
