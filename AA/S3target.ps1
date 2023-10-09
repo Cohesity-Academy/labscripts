@@ -16,10 +16,13 @@ param (
 Connect-CohesityCluster -Server $vipremote -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "local\$userremote", (ConvertTo-SecureString -AsPlainText "$passremote" -Force))
 $admininfo = Get-CohesityUser -Names admin
 $s3endpoint = "$vipremote:3000"
-$name = "S3CloudStorage"
-$bucketName = "S3CloudStorage"
+#$name = "S3CloudStorage"
+#$bucketName = "S3CloudStorage"
 $accessKeyId = $admininfo.S3AccessKeyId
 $secretAccessKey = $admininfo.S3SecretKey
+
+# source the cohesity-api helper code
+. $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
 apiauth -vip $vip -username $username -password $password -domain $domain
 
