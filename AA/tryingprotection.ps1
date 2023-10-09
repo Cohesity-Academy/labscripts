@@ -1,15 +1,15 @@
+
 # usage: ./tryingprotection.ps1 -vip clusername -username admin -password password -Name ""
 
 # process commandline arguments
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
-    [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
-    [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password
-    [Parameter(Mandatory = $True)][string]$name,  # name of protectiongroup
-    [Parameter(Mandatory = $True)][string]$storageDomainName = 'sd-idd-ic',
-    [Parameter(Mandatory = $True)][string]$policyName, # name of policy
-    [Parameter(Mandatory = $True)][string]$dasource = "\\ad-server-1.cohesitylabs.az\Home_dir\Penny"  # name of source
+    [Parameter(Mandatory = $false)][string]$vip = "cohesity-a.cohesitylabs.az",  # the cluster to connect to (DNS name or IP)
+    [Parameter(Mandatory = $false)][string]$username = "admin",  # username (local or AD)
+    [Parameter(Mandatory = $false)][string]$password = "cohesity123",  # local or AD domain password
+    [Parameter(Mandatory = $false)][string]$name = "NAS-CloudArchiveDirect",  # name of protectiongroup
+    [Parameter(Mandatory = $false)][string]$policyName = "CloudArchiveDirect", # name of policy
+    [Parameter(Mandatory = $false)][string]$dasource = "\\ad-server-1.cohesitylabs.az\Home_dir\Penny"  # name of source
 )
 
 # source the cohesity-api helper code
@@ -19,33 +19,14 @@ param (
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
 $policy = (api get -v2 "data-protect/policies").policies | Where-Object name -eq $policyName
-    if(!$policy){
-        Write-Host "Policy $policyName not found" -ForegroundColor Yellow
-        exit
-}
+$polid = $policy.id
 
-
-    $viewBoxes = api get viewBoxes
-    if($viewBoxes -is [array]){
-            $viewBox = $viewBoxes | Where-Object { $_.name -ieq $storageDomainName }
-            if (!$viewBox) { 
-                write-host "Storage domain $storageDomainName not Found" -ForegroundColor Yellow
-                exit
-            }
-    }else{
-        $viewBox = $viewBoxes[0]
-    }
 
 $sources = api get protectionSources/registrationInfo
 $daid = ($sources.rootNodes.rootNode |?{$_.name -eq "$dasource"}).id
 
 $myObject = @{
-    "policyId" = "$policy.id";
-    "startTime" = @{
-                      "hour" = 18;
-                      "minute" = 2;
-                      "timeZone" = "America/New_York"
-                  };
+    "policyId" = "$polid";
     "priority" = "kMedium";
     "sla" = @(
                 @{
@@ -59,8 +40,8 @@ $myObject = @{
             );
     "qosPolicy" = "kBackupHDD";
     "abortInBlackouts" = $false;
-    "storageDomainId" = $viewBox.id;
-    "name" = "TESTPg1";
+    "storageDomainId" = $null;
+    "name" = "$name";
     "environment" = "kGenericNas";
     "alertPolicy" = @{
                         "backupRunStatus" = @(
@@ -70,7 +51,7 @@ $myObject = @{
     "genericNasParams" = @{
                              "objects" = @(
                                              @{
-                                                 "id" = 18
+                                                 "id" = $daid
                                              }
                                          );
                              "indexingPolicy" = @{
@@ -114,4 +95,4 @@ $myObject = @{
 }
 
 
-$newpol = api post -v2 "data-protect/protection-groups" $myObject
+api POST -v2 data-protect/protection-groups $myObject
