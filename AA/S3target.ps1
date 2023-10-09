@@ -1,11 +1,21 @@
 
 
-Connect-CohesityCluster -Server cohesity-b.cohesitylabs.az -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "local\admin", (ConvertTo-SecureString -AsPlainText "cohesity123" -Force))
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory = $false)][string]$vip = "cohesity-a.cohesitylabs.az",  # the cluster to connect to (DNS name or IP)
+    [Parameter(Mandatory = $false)][string]$username = "admin",  # username (local or AD)
+    [Parameter(Mandatory = $false)][string]$password = "cohesity123",  # local or AD domain password
+    [Parameter(Mandatory = $false)][string]$name = "S3CloudStorage",  # name of protectiongroup
+    [Parameter(Mandatory = $false)][string]$bucketname = "S3CloudStorage", # name of policy
+    [Parameter(Mandatory = $false)][string]$vipremote = "cohesity-b.cohesitylabs.az",  # name of source
+    [Parameter(Mandatory = $false)][string]$userremote = "admin",  # name of protectiongroup
+    [Parameter(Mandatory = $false)][string]$passremote = "cohesity123" # name of policy
+)
+
+
+Connect-CohesityCluster -Server $vipremote -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "local\$userremote", (ConvertTo-SecureString -AsPlainText "$passremote" -Force))
 $admininfo = Get-CohesityUser -Names admin
-$vip = "Cohesity-a.cohesitylabs.az"
-$username = "admin"
-$password = "cohesity123"
-$s3endpoint = "cohesity-b.cohesitylabs.az:3000"
+$s3endpoint = "$vipremote:3000"
 $name = "S3CloudStorage"
 $bucketName = "S3CloudStorage"
 $accessKeyId = $admininfo.S3AccessKeyId
