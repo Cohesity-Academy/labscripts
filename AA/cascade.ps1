@@ -1,71 +1,26 @@
-<#
-Academy Labs Cohesity Replication To CloudArchive Prepare
------------------------------------------------------------------
-This script sets the required GFlags for archiving replicas on the cohesity-02 cluster.
+# usage: ./cascade.ps1 -vip clusername -username admin -password password 
 
-Arguments:
-None
+# process commandline arguments
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
+    [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
+    [Parameter(Mandatory = $True)][string]$password # local or AD domain password
+)
 
-Required Modules:
-None
-#>
-#Verify and process arguments passed to the script
+# source the cohesity-api helper code
+. $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
 
-Write-Output "Verifying arguments passed from script launcher ..."
-$passedArguments = $args[0]
-$passedArguments = $scriptArgs -split(",")
-$arraySize = $passedArguments.Count
-[int]$counter = 1
-if ($arraySize -gt 0) {
-    Write-Output "   Arguments Passed To Script:"
-    #Process arguments
-    foreach ($arg in $passedArguments) {
-        New-Variable -Name "var$counter" -Value $arg -Scope "Private"
-        $value = Get-Variable -Name "var$counter" -ValueOnly
-        Write-Output "      var$counter = $value"
-        $counter++
-    }
-} else {
-    Write-Output "   Script Arguments: No arguments to process"
-}
+# authenticate
+apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
-#Script variables
-$cohesity02ApiUrlv1 = "https://cohesity-b.cohesitylabs.az/irisservices/api/v1"
-$cohesity02Name = "cohesity-b"
-$cohesityClusterUsername = "admin"
-$cohesityClusterPassword = "cohesity123"
-$cohesityClusterDomain = "local"
+$response = api GET cluster
+$cohesityClusterId = $response.id
+$cohesityIncarnationId = $response.incarnationId
 
-#Get access token for cohesity-02
-Write-Output "`nConnecting to $cohesity02Name cluster ..."
-$payload = @{
-    "domain" = "$cohesityClusterDomain";
-    "password" = "$cohesityClusterPassword";
-    "username" = "$cohesityClusterUsername";
-} | ConvertTo-Json
-$cohesityHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-$cohesityHeader.Add("accept", "application/json")
-$response = Invoke-RestMethod -Method POST -Uri "$cohesity02ApiUrlv1/public/accessTokens" -Headers $cohesityHeader -ContentType "application/json" -Body $payload
-$cohesity02AccessToken = $response.accessToken
-Write-Output "   Connected to $cohesity02Name cluster"
 
-#Create authorized header
-$cohesity02AuthorizedHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-$cohesity02AuthorizedHeader.Add("Authorization", "Bearer $cohesity02AccessToken")
-$cohesity02AuthorizedHeader.Add("accept", "application/json")
-
-#Get cohesity-02 cluster ID and incarnation ID
-Write-Output "`nFetching cluster info for $cohesity02Name ..."
-$response = Invoke-RestMethod -Method GET -Uri "$cohesity02ApiUrlv1/public/cluster" -Headers $cohesity02AuthorizedHeader
-$cohesity02ClusterId = $response.id
-$cohesity02IncarnationId = $response.incarnationId
-Write-Output "   Cluster ID: $cohesity02ClusterId"
-Write-Output "   Incarnation ID: $cohesity02IncarnationId"
-
-#Set gflags for cascaded replication to archive on cohesity-02
-Write-Output "`nSetting Gflags on the $cohesity02Name cluster ..."
-$payload = @{
-    "clusterId" = [int64]$cohesity02ClusterId;
+$payload1 = @{
+    "clusterId" = [int64]$cohesityClusterId;
     "serviceName" = "magneto";
     "gflags" = @(
         @{
@@ -74,14 +29,14 @@ $payload = @{
             "reason" = "archive replica";
         }
     );
-} | ConvertTo-Json -Depth 50
-$response = Invoke-RestMethod -Method POST -Uri "$cohesity02ApiUrlv1/nexus/cluster/update_gflags" -Headers $cohesity02AuthorizedHeader -ContentType "application/json" -Body $payload
-Write-Output "   Set GFlag:"
-Write-Output "      Service: magneto"
-Write-Output "      Name: magneto_master_ignore_oob_copy_for_archival"
-Write-Output "      Value: false"
-$payload = @{
-    "clusterId" = [int64]$cohesity02ClusterId;
+} 
+
+$response1 = api POST /nexus/cluster/update_gflags $payload1
+
+
+
+$payload2 = @{
+    "clusterId" = [int64]$cohesityClusterId;
     "serviceName" = "magneto";
     "gflags" = @(
         @{
@@ -90,14 +45,13 @@ $payload = @{
             "reason" = "archive replica";
         }
     );
-} | ConvertTo-Json -Depth 50
-$response = Invoke-RestMethod -Method POST -Uri "$cohesity02ApiUrlv1/nexus/cluster/update_gflags" -Headers $cohesity02AuthorizedHeader -ContentType "application/json" -Body $payload
-Write-Output "   Set GFlag:"
-Write-Output "      Service: magneto"
-Write-Output "      Name: magneto_master_restrict_inactive_job_update"
-Write-Output "      Value: false"
-$payload = @{
-    "clusterId" = [int64]$cohesity02ClusterId;
+}
+
+$response2 = api POST /nexus/cluster/update_gflags $payload2
+
+
+$payload3 = @{
+    "clusterId" = [int64]$cohesityClusterId;
     "serviceName" = "bridge";
     "gflags" = @(
         @{
@@ -106,14 +60,12 @@ $payload = @{
             "reason" = "archive replica";
         }
     );
-} | ConvertTo-Json -Depth 50
-$response = Invoke-RestMethod -Method POST -Uri "$cohesity02ApiUrlv1/nexus/cluster/update_gflags" -Headers $cohesity02AuthorizedHeader -ContentType "application/json" -Body $payload
-Write-Output "   Set GFlag:"
-Write-Output "      Service: bridge"
-Write-Output "      Name: icebox_allow_archive_now_archives_as_reference_and_base"
-Write-Output "      Value: true"
-$payload = @{
-    "clusterId" = [int64]$cohesity02ClusterId;
+} 
+$response3 = api POST /nexus/cluster/update_gflags $payload3
+
+
+$payload4 = @{
+    "clusterId" = [int64]$cohesityClusterId;
     "serviceName" = "iris";
     "gflags" = @(
         @{
@@ -122,35 +74,29 @@ $payload = @{
             "reason" = "archive replica";
         }
     );
-} | ConvertTo-Json -depth 50
-$response = Invoke-RestMethod -Method POST -Uri "$cohesity02ApiUrlv1/nexus/cluster/update_gflags" -Headers $cohesity02AuthorizedHeader -ContentType "application/json" -Body $payload
-Write-Output "   Set GFlag:"
-Write-Output "      Service: iris"
-Write-Output "      Name: iris_ui_flags"
-Write-Output "      Value: editRunForInactiveJobsEnabled=true"
+}
+$response4 = api POST /nexus/cluster/update_gflags $payload4
 
-#Restart services
-Write-Output "`nRestarting Iris and Magneto services on the $cohesity02Name cluster ..."
-$payload = @{
-    "clusterId" = [int64]$cohesity02ClusterId;
+
+$payload5 = @{
+    "clusterId" = [int64]$cohesityClusterId;
     "services" = @(
         "iris"
         "magneto"
     );
-} | ConvertTo-Json -depth 50
-$response = Invoke-RestMethod -Method POST -Uri "$cohesity02ApiUrlv1/nexus/cluster/restart" -Headers $cohesity02AuthorizedHeader -ContentType "application/json" -Body $payload
-$message = $response.message
-Write-Output "   $message"
-Start-Sleep 10
+} 
+$response5 = api POST /nexus/cluster/restart $payload5
 
-#Wait for service restart to complete
-Write-Output "`nVerifying service restart on the $cohesity02Name cluster ..."
+
+start-sleep 10
+
+Write-Output "`nVerifying service restart on the $vip cluster ..."
 $serviceRestartStatus = 0
 $timer = 0
 while ($serviceRestartStatus -eq 0) {
     try {
-        $response = Invoke-RestMethod -Method GET -Uri "$cohesity02ApiUrlv1/public/cluster/status" -Headers $cohesity02AuthorizedHeader
-        $cohesityClusterCurrentOperation = $response.currentOperation
+        $response6 = api GET cluster/status 
+        $cohesityClusterCurrentOperation = $response6.currentOperation
     } catch {}
     if ($cohesityClusterCurrentOperation -match "kNone") {
         Write-Output "   Cluster services have been restarted"
