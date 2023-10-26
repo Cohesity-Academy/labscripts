@@ -62,7 +62,7 @@ $myObject = @{
                                         };
                      "objects" = @(
                                      @{
-                                         "sourceId" = $daid;
+                                         "sourceId" = $sourceid;
                                          "appParams" = @(
                                                            @{
                                                                "appId" = 87
