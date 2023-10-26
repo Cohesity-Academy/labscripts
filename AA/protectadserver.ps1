@@ -18,10 +18,6 @@ param (
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
-Connect-CohesityCluster -Server $vip -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "LOCAL\$username", (ConvertTo-SecureString -AsPlainText "$password" -Force))
-$source = get-cohesityprotectionsource -name $adserver
-$id = $source.rootNode.id
-
 $policy = (api get -v2 "data-protect/policies").policies | Where-Object name -eq $policyName
 $polid = $policy.id
 
