@@ -10,7 +10,7 @@ param (
 
 # source the cohesity-api helper code
 Install-Module -Name Posh-SSH -RequiredVersion 3.0.8 -scope Allusers -Force
-$SessionSSH = New-SSHSession -ComputerName $ip -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$username", (ConvertTo-SecureString -AsPlainText "$password" -Force)) -AcceptKey
+$SessionSSH = New-SSHSession -AcceptKey -ComputerName $ip -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$username", (ConvertTo-SecureString -AsPlainText "$password" -Force))
 Get-SSHSession | fl
 $session = Get-SSHSession -Index 0
 Start-Sleep 1
