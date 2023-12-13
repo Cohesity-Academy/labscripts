@@ -12,17 +12,19 @@ param (
 $SessionSSH = New-SSHSession -AcceptKey -ComputerName $ip -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$username", (ConvertTo-SecureString -AsPlainText "$password" -Force))
 Get-SSHSession | fl
 $session = Get-SSHSession -Index 0
-Start-Sleep 1
+Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
-Start-Sleep 1
+Start-Sleep 3
 $stream.Write("iris_cli`n")
-Start-Sleep 1
+Start-Sleep 3
 $stream.Write("admin`n")
-Start-Sleep 1
+Start-Sleep 3
 $stream.Write("cohesity123`n")
-Start-Sleep 1
-$stream.Write("iris_cli`n")
-Start-Sleep 1
+Start-Sleep 3
 $stream.Write("cluster secure-shell enable=false`n")
+start-sleep 3
+$stream.Write("exit`n")
+start-sleep 3
+$stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
-Remove-SSHTrustedHost -HostName 192.168.1.00
+Remove-SSHTrustedHost -HostName 192.168.1.100
