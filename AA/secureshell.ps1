@@ -27,5 +27,5 @@ $stream.Write("exit`n")
 start-sleep 3
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
-Remove-SSHTrustedHost -HostName 192.168.1.100
+Remove-SSHTrustedHost -HostName $ip
 start-sleep 180
