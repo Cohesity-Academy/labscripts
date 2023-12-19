@@ -13,10 +13,8 @@ $SessionSSH = New-SSHSession -AcceptKey -ComputerName $ip -Credential (New-Objec
 Get-SSHSession | fl
 $session = Get-SSHSession -Index 0
 Start-Sleep 3
-$stream.read()
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 Start-Sleep 3
-$stream.read()
 $stream.Write("iris_cli`n")
 Start-Sleep 3
 $stream.read()
