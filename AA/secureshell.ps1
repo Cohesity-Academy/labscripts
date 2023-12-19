@@ -17,20 +17,17 @@ $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 Start-Sleep 3
 $stream.Write("iris_cli`n")
 Start-Sleep 3
-$stream.read()
 $stream.Write("admin`n")
 Start-Sleep 3
-$stream.read()
 $stream.Write("cohesity123`n")
 Start-Sleep 3
-$stream.read()
 $stream.Write("cluster secure-shell enable=false`n")
 start-sleep 3
-$stream.read()
+$output = $stream.read()
 $stream.Write("exit`n")
 start-sleep 3
-$stream.read()
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $ip
 start-sleep 180
+$output[1]
