@@ -30,4 +30,4 @@ $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $ip
 start-sleep 180
-$output[1]
+$output
