@@ -5,16 +5,11 @@
 ### process commandline arguments
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$True)][string]$vip,
-    [Parameter(Mandatory=$True)][string]$username,
-    [Parameter()][string]$domain = 'local',
-    [Parameter()][string]$tenant,
-    [Parameter()][switch]$useApiKey,
-    [Parameter()][string]$password,
-    [Parameter()][switch]$noPrompt,
-    [Parameter()][string]$mfaCode,
-    [Parameter()][switch]$emailMfaCode,
+    [Parameter(Mandatory = $True)][string]$vip, #Cohesity cluster to connect to
+    [Parameter(Mandatory = $True)][string]$username, #Cohesity username
+    [Parameter()][string]$domain = 'local', #Cohesity user domain name
     [Parameter()][string]$serverList, #Servers to add as physical source
+    [Parameter()][string]$password,
     [Parameter()][string]$server,
     [Parameter()][switch]$storePassword,
     [Parameter()][switch]$installAgent,
@@ -51,14 +46,8 @@ Function Set-ServiceAcctCreds([string]$strCompName,[string]$strServiceName,[stri
     $service.StartService()
 }
 
-# authenticate
-apiauth -vip $vip -username $username -domain $domain -passwd $password -apiKeyAuthentication $useApiKey -mfaCode $mfaCode -sendMfaCode $emailMfaCode -tenant $tenant -noPromptForPassword $noPrompt
-
-if(!$cohesity_api.authorized){
-    Write-Host "Not authenticated"
-    exit 1
-}
-
+### authenticate
+apiauth -vip $vip -username $username -password $password -domain $domain
 
 ### get sqlAccount Password
 if($serviceAccount){
@@ -83,11 +72,11 @@ $sources = api get protectionSources/registrationInfo
 
 ### download agent installer to local host
 if ($installAgent) {
-    $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
-    $agentFile = "Cohesity_Agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
+    $downloadsFolder = "C:\Packages"
+    $agentFile = "Cohesity_Agent_$(((api get basicClusterInfo).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
     $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
     fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
-    $remoteFilePath = Join-Path -Path "C:\Packages" -ChildPath $agentFile
+    $remoteFilePath = Join-Path -Path "C:\Windows\Temp" -ChildPath $agentFile
 }
 
 foreach ($server in $servers){
@@ -99,13 +88,13 @@ foreach ($server in $servers){
 
         ### copy agent installer to server
         "`tcopying agent installer..."
-        Copy-Item $filepath \\$server\c$\Packages
+        Copy-Item $filepath \\$server\c$\Windows\Temp
 
         ### install agent and open firewall port
         "`tinstalling Cohesity agent..."
         $null = Invoke-Command -Computername $server -ArgumentList $remoteFilePath -ScriptBlock {
             param($remoteFilePath)
-                ([WMICLASS]"\\localhost\ROOT\CIMV2:win32_process").Create("$remoteFilePath /type=allcbt /verysilent /suppressmsgboxes /norestart")
+                ([WMICLASS]"\\localhost\ROOT\CIMV2:win32_process").Create("$remoteFilePath /type=allcbt /verysilent /supressmsgboxes /norestart")
                 New-NetFirewallRule -DisplayName 'Cohesity Agent' -Profile 'Domain' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 50051
         }
     }
