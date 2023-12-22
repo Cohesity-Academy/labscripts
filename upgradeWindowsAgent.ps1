@@ -87,7 +87,7 @@ if ($installAgent) {
     $agentFile = "Cohesity_Agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
     $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
     fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
-    $remoteFilePath = Join-Path -Path "C:\Windows\Temp" -ChildPath $agentFile
+    $remoteFilePath = Join-Path -Path "C:\Packages" -ChildPath $agentFile
 }
 
 foreach ($server in $servers){
@@ -99,7 +99,7 @@ foreach ($server in $servers){
 
         ### copy agent installer to server
         "`tcopying agent installer..."
-        Copy-Item $filepath \\$server\c$\Windows\Temp
+        Copy-Item $filepath \\$server\c$\Packages
 
         ### install agent and open firewall port
         "`tinstalling Cohesity agent..."
