@@ -24,20 +24,8 @@ $newSourceIds = @()
 foreach($server in $serversToAdd | Where-Object {$_ -ne ''}){
     $server = $server.ToString()
     $node = $sources.nodes | Where-Object { $_.protectionSource.name -eq $server }
-    if($node){
-        if($node.registrationInfo.refreshErrorMessage -or $node.registrationInfo.authenticationStatus -ne 'kFinished'){
-            Write-Warning "$server has source registration errors"
-        }else{
-            if($node.protectionSource.physicalProtectionSource.hostType -ne 'kLinux'){
                 $sourceId = $node.protectionSource.id
                 $newSourceIds += $sourceId
-            }else{
-                Write-Warning "$server is a Windows host"
-            }
-        }
-    }else{
-        Write-Warning "$server is not a registered source"
-    }
 }
 
 foreach($sourceId in @([array]$sourceIds + [array]$newSourceIds) | Sort-Object -Unique){
