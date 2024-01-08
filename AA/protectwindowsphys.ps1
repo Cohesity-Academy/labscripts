@@ -21,7 +21,7 @@ $sources = api get protectionSources?environments=kPhysical
 $sourceIds = [array]($job.physicalParams.fileProtectionTypeParams.objects.id)
 $newSourceIds = @()
 
-foreach($server in $serversToAdd | Where-Object {$_ -ne ''}){
+foreach($server in $servers | Where-Object {$_ -ne ''}){
     $server = $server.ToString()
     $node = $sources.nodes | Where-Object { $_.protectionSource.name -eq $server }
                 $sourceId = $node.protectionSource.id
