@@ -1,5 +1,5 @@
 #.\sshcmds.ps1 -ip "192.168.1.1" -username "admin" -password "password" -commands "iris_cli,admin,cohesity123,cluster secure-shell enable=false"
-# must have posh-ssh installed (install-module -name posh-ssh -scope Allusers -Force
+# must have posh-ssh installed (install-module -name posh-ssh -scope Allusers -Force)
 
 [CmdletBinding()]
 param (
