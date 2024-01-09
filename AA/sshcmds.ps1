@@ -21,3 +21,5 @@ $commands -split ',' | ForEach-Object {
     Start-Sleep 3
     $stream.Write("$_`n")
 }
+Remove-SSHSession -SessionId 0
+Remove-SSHTrustedHost -HostName $ip
