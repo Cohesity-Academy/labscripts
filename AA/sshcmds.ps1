@@ -17,9 +17,10 @@ Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 
 # Loop through each command in the comma-separated list and send it to the SSH stream
-$commands -split ',' | ForEach-Object {
+$command = $commands -split ","
+ForEach ($cmd in $command) {
     Start-Sleep 3
-    $stream.Write("$_`n")
+    $stream.Write("$cmd`n")
 }
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $ip
