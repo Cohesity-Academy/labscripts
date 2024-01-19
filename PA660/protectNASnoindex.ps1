@@ -19,9 +19,70 @@ Import-Module $(Join-Path -Path $PSScriptRoot -ChildPath userRights.psm1)
 ### authenticate
 apiauth -vip $vip -username $username -password $password -domain $domain
 
+if(!$job){
+    "Creating new protection group..."
+    $newJob = $True
+
+    # parse startTime
+    $hour, $minute = $startTime.split(':')
+    $tempInt = ''
+    if(! (($hour -and $minute) -or ([int]::TryParse($hour,[ref]$tempInt) -and [int]::TryParse($minute,[ref]$tempInt)))){
+        Write-Host "Please provide a valid start time" -ForegroundColor Yellow
+        exit
+    }
+    
+    # policy
+    if(!$policyName){
+        Write-Host "-policyName required when creating new job" -ForegroundColor Yellow
+        exit
+    }
+
+    $policy = (api get -v2 "data-protect/policies").policies | Where-Object name -eq $policyName
+    if(!$policy){
+        Write-Host "Policy $policyName not found" -ForegroundColor Yellow
+        exit
+    }
+    
+    # get storageDomain
+    $viewBoxes = api get viewBoxes
+    if($viewBoxes -is [array]){
+            $viewBox = $viewBoxes | Where-Object { $_.name -ieq $storageDomainName }
+            if (!$viewBox) { 
+                write-host "Storage domain $storageDomainName not Found" -ForegroundColor Yellow
+                exit
+            }
+    }else{
+        $viewBox = $viewBoxes[0]
+    }
+
+# get physical protection sources
+$sources = api get protectionSources?environments=kGenericNas
+
+$sourceIds = [array]($job.physicalParams.fileProtectionTypeParams.objects.id)
+$newSourceIds = @()
+
+foreach($server in $serversToAdd | Where-Object {$_ -ne ''}){
+    $nas = $server.ToString()
+    $node = $sources.nodes | Where-Object { $_.protectionSource.name -eq $server }
+    if($node){
+        if($node.registrationInfo.refreshErrorMessage -or $node.registrationInfo.authenticationStatus -ne 'kFinished'){
+            Write-Warning "$server has source registration errors"
+        }else{
+            if($node.protectionSource.physicalProtectionSource.hostType -ne 'kLinux'){
+                $sourceId = $node.protectionSource.id
+                $newSourceIds += $sourceId
+            }else{
+                Write-Warning "$server is a Windows host"
+            }
+        }
+    }else{
+        Write-Warning "$server is not a registered source"
+    }
+}
+
 
 $myObject = @{
-    "policyId" = "8158516650510261:1575649096260:3";
+    "policyId" = $policy.id;
     "startTime" = @{
                       "hour" = 15;
                       "minute" = 39;
@@ -40,8 +101,8 @@ $myObject = @{
             );
     "qosPolicy" = "kBackupHDD";
     "abortInBlackouts" = $false;
-    "storageDomainId" = 3203;
-    "name" = "$jobName";
+    "storageDomainId" = $viewBox.id;
+    "name" = $jobName;
     "environment" = "kGenericNas";
     "isPaused" = $false;
     "description" = "";
@@ -56,7 +117,7 @@ $myObject = @{
     "genericNasParams" = @{
                              "objects" = @(
                                              @{
-                                                 "id" = 50
+                                                 "id" = $sourceId
                                              }
                                          );
                              "indexingPolicy" = @{
