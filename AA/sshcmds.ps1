@@ -25,4 +25,5 @@ ForEach ($cmd in $command) {
     Start-Sleep 3
     $stream.Write("$cmd`n")
     Start-Sleep 1
+    $stream.read()
 }
