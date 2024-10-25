@@ -4,6 +4,9 @@ PATH=$ORACLE_HOME/bin:$PATH
 RMAN=$ORACLE_HOME/bin/rman
 export ORACLE_SID ORACLE_HOME PATH
 
+LOGFILE="$LOGDIR/$(date +%Y-%m-%d-%T)_full_backup.log"
+
+echo -e "\r\n Starting restore of $ORACLE_SID database at $DATE. \r\n"
 
 $RMAN target / nocatalog $LOGFILE << EOF
 
