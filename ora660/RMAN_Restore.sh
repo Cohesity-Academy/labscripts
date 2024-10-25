@@ -4,9 +4,17 @@ PATH=$ORACLE_HOME/bin:$PATH
 RMAN=$ORACLE_HOME/bin/rman
 export ORACLE_SID ORACLE_HOME PATH
 
-rman target / nocatalog
-shutdown;
-startup mount;
-restore database;
-recover database;
-alter database open;
+
+$RMAN target / nocatalog $LOGFILE << EOF
+
+RUN {
+      shutdown;
+      startup mount;
+      restore database;
+      recover database;
+      alter database open;
+      }
+EOF
+
+
+
