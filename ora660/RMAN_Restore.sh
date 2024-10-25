@@ -19,5 +19,4 @@ RUN {
       }
 EOF
 
-
-
+echo - e "\r\n \r\n Restore completed at $DATE. \r\n \r\n Job details can be found here: \$LOGFILE \r\n \r\n"
