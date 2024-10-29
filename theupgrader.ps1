@@ -6,7 +6,7 @@
 Install-Script -Name winget-install -Force
 winget-install
 start-sleep 10
-$wgetpath = dir$ "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
+$wgetpath = dir "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe"
 TAKEOWN /F $wgetpath.fullname /R /A /D Y
 ICACLS $wgetpath.fullname /grant Administrators:F /T
 winget upgrade winscp --silent --accept-package-agreements --accept-source-agreements
