@@ -1,7 +1,4 @@
-#$Source = "https://github.com/Cohesity-Academy/labscripts/raw/refs/heads/main/theupgrader.ps1"  
-#$Destination = "theupgrader.ps1"  
-#Invoke-WebRequest -Uri $source -OutFile $Destination  
-#./theupgrader.ps1
+#$Source = "https://github.com/Cohesity-Academy/labscripts/raw/refs/heads/main/theupgrader.ps1"; $Destination = "theupgrader.ps1"; Invoke-WebRequest -Uri $source -OutFile $Destination; ./theupgrader.ps1
 
 Install-Script -Name winget-install -Force
 winget-install
