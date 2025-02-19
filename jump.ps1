@@ -8,6 +8,6 @@ Invoke-WebRequest -Uri $source -OutFile $Destination
 $action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File c:\users\coh-student.cohesitylabs\documents\scripts\theupgrader.ps1"
 $trigger = New-ScheduledTaskTrigger -AtLogon
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
-$principal = New-ScheduledTaskPrincipal -UserId “NT AUTHORITY\SYSTEM” -LogonType Password
-Register-ScheduledTask -TaskName “Upgrade Software" -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType Password
+Register-ScheduledTask -TaskName "Upgrade Software" -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 shutdown /r /t 0
