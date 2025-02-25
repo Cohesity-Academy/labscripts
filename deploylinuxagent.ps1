@@ -92,6 +92,35 @@ foreach ($server in $servers){
         }
     }
 
+# Set the credentials
+$Password = ConvertTo-SecureString 'Password1' -AsPlainText -Force
+$Credential = New-Object System.Management.Automation.PSCredential ('root', $Password)
+
+# Set local file path, SFTP path, and the backup location path which I assume is an SMB path
+$FilePath = "C:\FileDump\test.txt"
+$SftpPath = '/Outbox'
+$SmbPath = '\\filer01\Backup'
+
+# Set the IP of the SFTP server
+$SftpIp = '10.209.26.105'
+
+# Load the Posh-SSH module
+Import-Module C:\Temp\Posh-SSH
+
+# Establish the SFTP connection
+$ThisSession = New-SFTPSession -ComputerName $SftpIp -Credential $Credential
+
+# Upload the file to the SFTP path
+Set-SFTPFile -SessionId ($ThisSession).SessionId -LocalFile $FilePath -RemotePath $SftpPath
+
+#Disconnect all SFTP Sessions
+Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
+
+# Copy the file to the SMB location
+Copy-Item -Path $FilePath -Destination $SmbPath
+
+
+
     ### register server as physical source
     if($register){
         "`tRegistering as Cohesity protection source..."
