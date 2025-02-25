@@ -1,4 +1,4 @@
-### usage: ./deployWindowsAgent.ps1 -vip bseltzve01 -username admin -serverList ./servers.txt [ -installAgent ] [ -register ] [ -registerSQL ] [ -serviceAccount mydomain.net\myuser ]
+### usage: ./deployWindowsAgent.ps1 -vip bseltzve01 -username admin -serverName server.name.local -package (deb,rpm) [ -installAgent ] [ -register ] [ -registerSQL ] [ -serviceAccount mydomain.net\myuser ]
 ### provide a list of servers in a text file
 ### specify any of -installAgent -register -registerSQL -serviceAccount -storePassword
 
@@ -19,10 +19,6 @@ param (
     [Parameter()][string]$serverName,
     [Parameter()][switch]$storePassword,
     [Parameter()][switch]$installAgent,
-    [Parameter()][switch]$register,
-    [Parameter()][switch]$registerAD,
-    [Parameter()][switch]$registerSQL,
-    [Parameter()][switch]$sqlCluster,
     [Parameter()][string]$serviceAccount = $null,
     [Parameter()][string]$filepath,
     [Parameter()][ValidateSet('onlyagent','volcbt','fscbt','allcbt')][string]$cbtType = 'allcbt',
@@ -50,6 +46,15 @@ if(!$cohesity_api.authorized){
     exit 1
 }
 
+if $package = deb {
+    $beginning = "cohesity-agent_"
+    $ending = "-1_amd64.deb"
+}
+if $package = rpm {
+    $beginning = "el-cohesity_"
+    $ending = "-1.x86_64.rpm"
+}
+
 ### get protection sources
 $sources = api get protectionSources/registrationInfo
 
@@ -59,7 +64,7 @@ if($installAgent){
         $agentFile = $filepath
     }else{
         $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
-        $agentFile = "Cohesity_Agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
+        $agentFile = "$beginning + $(((api get cluster).clusterSoftwareVersion).split('_')[0]) + $ending"
         $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
         fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
     }
