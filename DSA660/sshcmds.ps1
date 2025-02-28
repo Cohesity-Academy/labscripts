@@ -18,7 +18,7 @@ Get-SSHSession | fl
 $session = Get-SSHSession -Index 0
 Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
-#$outputFile = "C:\output.txt"
+$outputFile = "C:\output.txt"
 
 # Loop through each command in the comma-separated list and send it to the SSH stream
 $command = $commands -split ","
@@ -27,5 +27,5 @@ ForEach ($cmd in $command) {
     $stream.Write("$cmd`n")
     Start-Sleep 1
     $output = $stream.read()
-    #$output | Out-File -FilePath $outputFile -Append
+    $output | Out-File -FilePath $outputFile -Append
 }
