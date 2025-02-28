@@ -68,7 +68,7 @@ Import-Module Posh-SSH
 $ThisSession = New-SFTPSession -AcceptKey -ComputerName $SftpIp -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$linuser", (ConvertTo-SecureString -AsPlainText "$linpass" -Force))
 
 # Upload the file to the SFTP path
-Set-SFTPFile -SessionId ($ThisSession).SessionId -Path $FilePath -Destination $SftpPath
+Set-SFTPItem -SessionId ($ThisSession).SessionId -Path $FilePath -Destination $SftpPath
 
 #Disconnect all SFTP Sessions
 Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
