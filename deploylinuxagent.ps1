@@ -7,9 +7,11 @@
 param (
     [Parameter(Mandatory=$True)][string]$vip,
     [Parameter(Mandatory=$True)][string]$username,
+    [Parameter(Mandatory=$True)][string]$linuser,
     [Parameter()][string]$domain = 'local',
     [Parameter()][string]$password,
-    [Parameter()][string]$package,
+    [Parameter()][string]$linpass,
+    [Parameter()][string]$package, # DEB RPM SCRIPT
     [Parameter()][string]$serverName,
     [Parameter()][string]$filepath = "c:\",
     [Parameter()][ValidateSet('onlyagent','volcbt','fscbt','allcbt')][string]$cbtType = 'allcbt',
@@ -27,88 +29,62 @@ if($serverList){
     
 ### source the cohesity-api helper code
 . $(Join-Path -Path $PSScriptRoot -ChildPath cohesity-api.ps1)
-Import-Module $(Join-Path -Path $PSScriptRoot -ChildPath userRights.psm1)
 
 # authenticate
-apiauth -vip $vip -username $username -domain $domain -passwd $password -apiKeyAuthentication $useApiKey -mfaCode $mfaCode -sendMfaCode $emailMfaCode -tenant $tenant -noPromptForPassword $noPrompt
+apiauth -vip $vip -username $username -domain $domain -passwd $password 
 
 if(!$cohesity_api.authorized){
     Write-Host "Not authenticated"
     exit 1
 }
 
-if $package = deb {
-    $beginning = "cohesity-agent_"
-    $ending = "-1_amd64.deb"
-}
-if $package = rpm {
-    $beginning = "el-cohesity_"
-    $ending = "-1.x86_64.rpm"
-}
-
 ### get protection sources
 $sources = api get protectionSources/registrationInfo
 
 ### download agent installer to local host
-if($installAgent){
-    if($filepath){
+if($filepath){
         $agentFile = $filepath
     }else{
         $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
-        $agentFile = "$beginning + $(((api get cluster).clusterSoftwareVersion).split('_')[0]) + $ending"
+        $agentFile = "cohesity-agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0]).$package"
         $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
-        fileDownload 'physicalAgents/download?hostType=kLinux' $filepath
+        fileDownload "physicalAgents/download?hostType=kLinux&pkgType=k$package" $filepath
     }
-}
 
-foreach ($server in $servers){
-    $server = $server.ToString()
-    "managing Cohesity Agent on $server"
-    $remotePath = "\\$($server)\$($tempPath)"
-    $remoteFilePath = Join-Path -Path "\\$($server)\$($tempPath)" -ChildPath  "Cohesity_Agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0])_Win_x64_Installer.exe"
-    ### install Cohesity Agent
-    if($installAgent){
-        ### copy agent installer to server
-        "`tcopying agent installer $agentFile to $remotePath..."
-        Copy-Item $filepath $remotePath
-
-        ### install agent and open firewall port
-        "`tinstalling Cohesity agent..."
-        $null = Invoke-Command -Computername $server -ArgumentList $remoteFilePath, $cbtType -ScriptBlock {
-            param($remoteFilePath, $cbtType)
-            # if(! $(Get-Service | Where-Object { $_.Name -eq 'CohesityAgent' })){
-                ([WMICLASS]"\\localhost\ROOT\CIMV2:win32_process").Create("$remoteFilePath /type=$cbtType /verysilent /suppressmsgboxes /NORESTART")
-                New-NetFirewallRule -DisplayName 'Cohesity Agent' -Profile 'Domain' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 50051
-            # }
-        }
-    }
 
 # Set the credentials
-$Password = ConvertTo-SecureString 'Password1' -AsPlainText -Force
-$Credential = New-Object System.Management.Automation.PSCredential ('root', $Password)
+#$Password = ConvertTo-SecureString 'Password1' -AsPlainText -Force
+#$Credential = New-Object System.Management.Automation.PSCredential ('root', $Password)
 
 # Set local file path, SFTP path, and the backup location path which I assume is an SMB path
-$FilePath = "C:\FileDump\test.txt"
-$SftpPath = '/Outbox'
-$SmbPath = '\\filer01\Backup'
+$filepath = "cohesity-agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0]).$package"
+$SftpPath = '/home/coh-student'
 
 # Set the IP of the SFTP server
-$SftpIp = '10.209.26.105'
+$SftpIp = $servername
 
 # Load the Posh-SSH module
-Import-Module C:\Temp\Posh-SSH
+Import-Module Posh-SSH
 
 # Establish the SFTP connection
-$ThisSession = New-SFTPSession -ComputerName $SftpIp -Credential $Credential
+$ThisSession = New-SFTPSession -AcceptKey -ComputerName $SftpIp -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$linuser", (ConvertTo-SecureString -AsPlainText "$linpass" -Force))
 
 # Upload the file to the SFTP path
-Set-SFTPFile -SessionId ($ThisSession).SessionId -LocalFile $FilePath -RemotePath $SftpPath
+Set-SFTPFile -SessionId ($ThisSession).SessionId -Path $FilePath -Destination $SftpPath
 
 #Disconnect all SFTP Sessions
 Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
-
-# Copy the file to the SMB location
-Copy-Item -Path $FilePath -Destination $SmbPath
-
-
-}
+Remove-SSHSession -SessionId 0
+Remove-SSHTrustedHost -HostName $ip
+#Install package
+$SessionSSH = New-SSHSession -AcceptKey -ComputerName  $SftpIp -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$linuser", (ConvertTo-SecureString -AsPlainText "$linpass" -Force))
+Get-SSHSession | fl
+$session = Get-SSHSession -Index 0
+Start-Sleep 3
+$stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
+Start-Sleep 3
+$stream.Write("sudo dpkg -i $FilePath")
+Start-Sleep 15
+$stream.Write("exit`n")
+Remove-SSHSession -SessionId 0
+Remove-SSHTrustedHost -HostName $ip
