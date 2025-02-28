@@ -40,14 +40,11 @@ if(!$cohesity_api.authorized){
 $sources = api get protectionSources/registrationInfo
 
 ### download agent installer to local host
-if($filepath){
-        $agentFile = $filepath
-    }else{
-        $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
-        $agentFile = "cohesity-agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0]).$package"
-        $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
-        fileDownload "physicalAgents/download?hostType=kLinux&pkgType=k$package" $filepath
-    }
+$downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
+$agentFile = "cohesity-agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0]).$package"
+$filepath = join-path -path $downloadsFolder -ChildPath $agentFile
+fileDownload "physicalAgents/download?hostType=kLinux&pkgType=k$package" $filepath
+
 
 
 # Set the credentials
@@ -55,7 +52,6 @@ if($filepath){
 #$Credential = New-Object System.Management.Automation.PSCredential ('root', $Password)
 
 # Set local file path, SFTP path, and the backup location path which I assume is an SMB path
-$filepath = "cohesity-agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0]).$package"
 $SftpPath = '/home/coh-student'
 
 # Set the IP of the SFTP server
@@ -82,7 +78,7 @@ Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 Start-Sleep 3
 $stream.Write("sudo dpkg -i $agentFile")
-Start-Sleep 15
+Start-Sleep 30
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $SftpIp
