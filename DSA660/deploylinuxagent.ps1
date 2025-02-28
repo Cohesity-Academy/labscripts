@@ -73,7 +73,7 @@ Set-SFTPItem -SessionId ($ThisSession).SessionId -Path $FilePath -Destination $S
 #Disconnect all SFTP Sessions
 Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
 Remove-SSHSession -SessionId 0
-Remove-SSHTrustedHost -HostName $ip
+Remove-SSHTrustedHost -HostName $SftpIp
 #Install package
 $SessionSSH = New-SSHSession -AcceptKey -ComputerName  $SftpIp -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$linuser", (ConvertTo-SecureString -AsPlainText "$linpass" -Force))
 Get-SSHSession | fl
@@ -81,8 +81,8 @@ $session = Get-SSHSession -Index 0
 Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 Start-Sleep 3
-$stream.Write("sudo dpkg -i $FilePath")
+$stream.Write("sudo dpkg -i $agentFile")
 Start-Sleep 15
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
-Remove-SSHTrustedHost -HostName $ip
+Remove-SSHTrustedHost -HostName $SftpIp
