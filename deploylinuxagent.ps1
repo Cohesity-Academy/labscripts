@@ -8,19 +8,10 @@ param (
     [Parameter(Mandatory=$True)][string]$vip,
     [Parameter(Mandatory=$True)][string]$username,
     [Parameter()][string]$domain = 'local',
-    [Parameter()][string]$tenant,
-    [Parameter()][switch]$useApiKey,
     [Parameter()][string]$password,
     [Parameter()][string]$package,
-    [Parameter()][switch]$noPrompt,
-    [Parameter()][string]$mfaCode,
-    [Parameter()][switch]$emailMfaCode,
-    [Parameter()][string]$serverList, #Servers to add as physical source
     [Parameter()][string]$serverName,
-    [Parameter()][switch]$storePassword,
-    [Parameter()][switch]$installAgent,
-    [Parameter()][string]$serviceAccount = $null,
-    [Parameter()][string]$filepath,
+    [Parameter()][string]$filepath = "c:\",
     [Parameter()][ValidateSet('onlyagent','volcbt','fscbt','allcbt')][string]$cbtType = 'allcbt',
     [Parameter()][string]$tempPath = 'admin$\Temp'
 )
@@ -66,7 +57,7 @@ if($installAgent){
         $downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
         $agentFile = "$beginning + $(((api get cluster).clusterSoftwareVersion).split('_')[0]) + $ending"
         $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
-        fileDownload 'physicalAgents/download?hostType=kWindows' $filepath
+        fileDownload 'physicalAgents/download?hostType=kLinux' $filepath
     }
 }
 
@@ -120,91 +111,4 @@ Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
 Copy-Item -Path $FilePath -Destination $SmbPath
 
 
-
-    ### register server as physical source
-    if($register){
-        "`tRegistering as Cohesity protection source..."
-        Start-Sleep 5
-        $sourceId = $null
-        $phys = api get protectionSources?environments=kPhysical
-        $sourceId = ($phys.nodes | Where-Object { $_.protectionSource.name -ieq $server }).protectionSource.id
-        if($null -eq $sourceId){
-            $newPhysicalSource = @{
-                'entity' = @{
-                    'type' = 6;
-                    'physicalEntity' = @{
-                        'name' = $server;
-                        'type' = $entityType;
-                        'hostType' = 1
-                    }
-                };
-                'entityInfo' = @{
-                    'endpoint' = $server;
-                    'type' = 6;
-                    'hostType' = 1
-                };
-                'sourceSideDedupEnabled' = $true;
-                'throttlingPolicy' = @{
-                    'isThrottlingEnabled' = $false
-                };
-                'forceRegister' = $True
-            }
-        
-            $result = api post /backupsources $newPhysicalSource
-            if($null -eq $result){
-                continue
-            } 
-        }    
-    }
-
-    ### set service account
-    if($serviceAccount){
-        "`tSetting CohesityAgent Service Logon Account..."
-        Start-Sleep 10
-        Grant-UserRight -Computer $server -User $serviceAccount -Right SeServiceLogonRight
-        $null = Set-ServiceAcctCreds $server 'CohesityAgent' $serviceAccount $sqlPassword
-    }
-
-    ### register server as AD domain controller
-    if($registerAD){
-        "`tRegistering as Active Directory Domain Controller..."
-        $phys = api get protectionSources?environments=kPhysical
-        $source = $phys.nodes | Where-Object { $_.protectionSource.name -ieq $server }
-        $sourceId = $source.protectionSource.id
-        if($sourceId){
-            if($source.authenticationStatus -ne 'kFinished'){
-                Start-Sleep 10
-            }
-            $adParams = @{
-                "ownerEntity" = @{
-                    "id" = $sourceId
-                };
-                "appEnvVec"   = @(
-                    29
-                )
-            }
-            $null = api post /applicationSourceRegistration $adParams
-        }else{
-            Write-Warning "$server is not yet registered as a protection source"
-        }
-    }
-
-    ### register server as SQL
-    if($registerSQL){
-        if(! $($sources.rootNodes | Where-Object { $_.rootNode.name -eq $server -and $_.applications.environment -eq 'kSQL' })){
-            "`tRegistering as SQL protection source..."
-            $phys = api get protectionSources?environments=kPhysical
-            $source = $phys.nodes | Where-Object { $_.protectionSource.name -ieq $server }
-            $sourceId = $source.protectionSource.id
-            if($sourceId){
-                if($source.authenticationStatus -ne 'kFinished'){
-                    Start-Sleep 10
-                }
-                $regSQL = @{"ownerEntity" = @{"id" = $sourceId}; "appEnvVec" = @(3)}
-                $null = api post /applicationSourceRegistration $regSQL
-            }else{
-                Write-Warning "$server is not yet registered as a protection source"
-            }
-        }
-    }
 }
