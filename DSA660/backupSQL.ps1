@@ -1,4 +1,4 @@
-# usage: ./backupSQL.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" 
+# usage: ./backupSQL.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" -storageDomainName 
 
 # process commandline arguments
 [CmdletBinding()]
@@ -6,7 +6,7 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
     [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password  
-    [Parameter(Mandatory = $false)][string]$storageDomainName = sd_idd_ic,  # local or AD domain password  
+    [Parameter()][string]$storageDomainName = 'sd-idd-ic',  # local or AD domain password  
     [Parameter(Mandatory = $True)][string]$name  # name of backup
 )
 
@@ -52,7 +52,7 @@ $mysqlObject = @{
             );
     "qosPolicy" = "kBackupHDD";
     "abortInBlackouts" = $false;
-    "storageDomainId" = $viewBox;
+    "storageDomainId" = $viewBox.id;
     "name" = "$name";
     "environment" = "kSQL";
     "isPaused" = $false;
