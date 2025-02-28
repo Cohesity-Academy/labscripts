@@ -1,4 +1,4 @@
-# usage: ./backupSQL.ps1 -vip mycluster -username myusername -password mypassword -Name "policyname" -storageDomainName 
+# usage: ./backupSQL.ps1 -vip mycluster -username myusername -password mypassword -Name "jobname" -storageDomainName -policy name
 
 # process commandline arguments
 [CmdletBinding()]
@@ -7,7 +7,8 @@ param (
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
     [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password  
     [Parameter()][string]$storageDomainName = 'sd-idd-ic',  # local or AD domain password  
-    [Parameter(Mandatory = $True)][string]$name  # name of backup
+    [Parameter(Mandatory = $True)][string]$name,  # name of backup
+    [Parameter()][string]$policyName = 'Gold' #name of policy
 )
 
 # source the cohesity-api helper code
@@ -30,10 +31,20 @@ apiauth -vip $vip -username $username -domain $domain -password $password -quiet
     }else{
         $viewBox = $viewBoxes[0]
     }
+    # policy
+    if(!$policyName){
+        Write-Host "-policyName required when creating new job" -ForegroundColor Yellow
+        exit
+    }
 
+    $policy = (api get -v2 "data-protect/policies").policies | Where-Object name -eq $policyName
+    if(!$policy){
+        Write-Host "Policy $policyName not found" -ForegroundColor Yellow
+        exit
+    }
 
 $mysqlObject = @{
-    "policyId" = "8158516650510261:1575649096260:1";
+    "policyId" = $policy.id;
     "startTime" = @{
                       "hour" = 20;
                       "minute" = 23;
