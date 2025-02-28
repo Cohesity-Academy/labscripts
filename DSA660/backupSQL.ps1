@@ -6,6 +6,7 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
     [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password  
+    [Parameter(Mandatory = $false)][string]$storageDomainName = sd_idd_ic,  # local or AD domain password  
     [Parameter(Mandatory = $True)][string]$name  # name of backup
 )
 
@@ -17,6 +18,19 @@ $SQL = Get-CohesityMSSQLObject
 
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
+
+    # get storageDomain
+    $viewBoxes = api get viewBoxes
+    if($viewBoxes -is [array]){
+            $viewBox = $viewBoxes | Where-Object { $_.name -ieq $storageDomainName }
+            if (!$viewBox) { 
+                write-host "Storage domain $storageDomainName not Found" -ForegroundColor Yellow
+                exit
+            }
+    }else{
+        $viewBox = $viewBoxes[0]
+    }
+
 
 $mysqlObject = @{
     "policyId" = "8158516650510261:1575649096260:1";
@@ -38,7 +52,7 @@ $mysqlObject = @{
             );
     "qosPolicy" = "kBackupHDD";
     "abortInBlackouts" = $false;
-    "storageDomainId" = 3203;
+    "storageDomainId" = $viewBox;
     "name" = "$name";
     "environment" = "kSQL";
     "isPaused" = $false;
