@@ -16,7 +16,7 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $poldatalockobjects = api get -v2 data-protect\policies
 
-If (($poldatalockobjects.policies |?{$_.name -eq "Gold"}).extendedRetention.retention.dataLockConfig.mode -eq "Compliance") {
+If (($poldatalockobjects.policies |?{$_.name -eq "SQL"}).extendedRetention.retention.dataLockConfig.mode -eq "Compliance") {
 Write-Host "Correct"
 }
 Else {Write-Host "Incorrect"}
