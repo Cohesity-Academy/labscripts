@@ -40,7 +40,7 @@ if(!$cohesity_api.authorized){
 $sources = api get protectionSources/registrationInfo
 
 ### download agent installer to local host
-$downloadsFolder = join-path -path $([Environment]::GetFolderPath("UserProfile")) -ChildPath downloads
+$downloadsFolder = "c:\packages"
 $agentFile = "cohesity-agent_$(((api get cluster).clusterSoftwareVersion).split('_')[0]).$package"
 $filepath = join-path -path $downloadsFolder -ChildPath $agentFile
 fileDownload "physicalAgents/download?hostType=kLinux&pkgType=k$package" $filepath
