@@ -8,7 +8,7 @@ param (
     [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password  
     [Parameter()][string]$storageDomainName = 'sd-idd-ic',  # local or AD domain password  
     [Parameter(Mandatory = $True)][string]$name,  # name of backup
-    [Parameter()][string]$policyName = 'Gold' #name of policy
+    [Parameter()][string]$policyName = 'SQL' #name of policy
 )
 
 # source the cohesity-api helper code
