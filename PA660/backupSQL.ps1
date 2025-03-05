@@ -6,7 +6,9 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
     [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password  
-    [Parameter(Mandatory = $True)][string]$name  # name of backup
+    [Parameter()][string]$storageDomainName = 'sd-idd-ic',  # local or AD domain password  
+    [Parameter(Mandatory = $True)][string]$name,  # name of backup
+    [Parameter()][string]$policyName = 'Gold' #name of policy
 )
 
 # source the cohesity-api helper code
@@ -18,8 +20,32 @@ $SQL = Get-CohesityMSSQLObject
 # authenticate
 apiauth -vip $vip -username $username -domain $domain -password $password -quiet
 
+    # get storageDomain
+    $viewBoxes = api get viewBoxes
+    if($viewBoxes -is [array]){
+            $viewBox = $viewBoxes | Where-Object { $_.name -ieq $storageDomainName }
+            if (!$viewBox) { 
+                write-host "Storage domain $storageDomainName not Found" -ForegroundColor Yellow
+                exit
+            }
+    }else{
+        $viewBox = $viewBoxes[0]
+    }
+    # policy
+    if(!$policyName){
+        Write-Host "-policyName required when creating new job" -ForegroundColor Yellow
+        exit
+    }
+
+    $policy = (api get -v2 "data-protect/policies").policies | Where-Object name -eq $policyName
+    if(!$policy){
+        Write-Host "Policy $policyName not found" -ForegroundColor Yellow
+        exit
+    }
+
+
 $mysqlObject = @{
-    "policyId" = "8158516650510261:1575649096260:1";
+    "policyId" = $policy.id;
     "startTime" = @{
                       "hour" = 20;
                       "minute" = 23;
@@ -38,7 +64,7 @@ $mysqlObject = @{
             );
     "qosPolicy" = "kBackupHDD";
     "abortInBlackouts" = $false;
-    "storageDomainId" = 3203;
+    "storageDomainId" = $viewBox.id;
     "name" = "$name";
     "environment" = "kSQL";
     "isPaused" = $false;
