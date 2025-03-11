@@ -65,7 +65,7 @@ $ThisSession = New-SFTPSession -AcceptKey -ComputerName $SftpIp -Credential (New
 
 # Upload the file to the SFTP path
 Set-SFTPItem -SessionId ($ThisSession).SessionId -Path $FilePath -Destination $SftpPath
-
+Start-Sleep 30
 #Disconnect all SFTP Sessions
 Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
 Remove-SSHSession -SessionId 0
@@ -76,7 +76,7 @@ Get-SSHSession | fl
 $session = Get-SSHSession -Index 0
 Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
-Start-Sleep 30
+Start-Sleep 3
 $stream.Write("sudo dpkg -i $agentFile`n")
 Start-Sleep 30
 $stream.Write("exit`n")
