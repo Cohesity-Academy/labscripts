@@ -76,9 +76,9 @@ Get-SSHSession | fl
 $session = Get-SSHSession -Index 0
 Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
-Start-Sleep 3
+Start-Sleep 30
 $stream.Write("sudo dpkg -i $agentFile`n")
-Start-Sleep 60
+Start-Sleep 30
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $SftpIp
