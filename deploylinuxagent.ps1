@@ -77,7 +77,7 @@ $session = Get-SSHSession -Index 0
 Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 Start-Sleep 3
-$stream.Write("sudo dpkg -i $agentFile`n")
+$stream.Write("sudo dpkg --force-confnew -i $agentFile`n")
 Start-Sleep 30
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
