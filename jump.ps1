@@ -10,7 +10,6 @@ $trigger = New-ScheduledTaskTrigger -AtLogon
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType Password
 Register-ScheduledTask -TaskName "Upgrade Software" -Action $action -Trigger $trigger -Principal $principal -Settings $settings
-ssmsfix.ps1
 $Source2 = "https://github.com/Cohesity-Academy/labscripts/raw/refs/heads/main/ssmsfix.ps1"
 $Destination2 = "c:\users\coh-student.cohesitylabs\documents\scripts\ssmsfix.ps1"
 Invoke-WebRequest -Uri $source2 -OutFile $Destination2
