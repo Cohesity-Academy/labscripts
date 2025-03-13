@@ -16,6 +16,6 @@ Invoke-WebRequest -Uri $source2 -OutFile $Destination2
 $action2 = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File c:\users\coh-student.cohesitylabs\documents\scripts\ssmsfix.ps1"
 $trigger2 = New-ScheduledTaskTrigger -AtLogon
 $settings2 = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
-$principal2 = New-ScheduledTaskPrincipal -UserId "cohesitylabs\coh-student" -LogonType Password
+$principal2 = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunLevel Highest
 Register-ScheduledTask -TaskName "Fix SSMS" -Action $action2 -Trigger $trigger2 -Principal $principal2 -Settings $settings2
 shutdown /r /t 0
