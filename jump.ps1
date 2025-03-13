@@ -10,4 +10,13 @@ $trigger = New-ScheduledTaskTrigger -AtLogon
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType Password
 Register-ScheduledTask -TaskName "Upgrade Software" -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+ssmsfix.ps1
+$Source2 = "https://github.com/Cohesity-Academy/labscripts/raw/refs/heads/main/ssmsfix.ps1"
+$Destination2 = "c:\users\coh-student.cohesitylabs\documents\scripts\ssmsfix.ps1"
+Invoke-WebRequest -Uri $source2 -OutFile $Destination2
+$action2 = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File c:\users\coh-student.cohesitylabs\documents\scripts\ssmsfix.ps1"
+$trigger2 = New-ScheduledTaskTrigger -AtLogon
+$settings2 = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+$principal2 = New-ScheduledTaskPrincipal -UserId "cohesitylabs\coh-student" -LogonType Password
+Register-ScheduledTask -TaskName "Fix SSMS" -Action $action2 -Trigger $trigger2 -Principal $principal2 -Settings $settings2
 shutdown /r /t 0
