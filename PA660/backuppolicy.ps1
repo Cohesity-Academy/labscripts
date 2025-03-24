@@ -29,7 +29,7 @@ $policyParams = @{
             };
             "retention" = @{
                 "unit" = "Days";
-                "duration" = 1
+                "duration" = 30
             }
         }
     };
