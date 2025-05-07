@@ -77,10 +77,8 @@ $session = Get-SSHSession -Index 0
 Start-Sleep 3
 $stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
 Start-Sleep 3
-$stream.Write("sudo dpkg --force-confnew -i $agentFile`n")
+$stream.Write("while ! dpkg -s cohesity-agent &>/dev/null; do cd /home/coh-student && sudo dpkg --force-confnew -i cohesity-agent_7.1.2.DEB ; done`n")
 Start-Sleep 40
-$stream.Write("sudo dpkg --force-confnew -i $agentFile`n")
-Start-Sleep 20
 $stream.Write("exit`n")
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $SftpIp
