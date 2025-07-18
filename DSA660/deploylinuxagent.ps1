@@ -70,19 +70,29 @@ Start-Sleep 30
 Get-SFTPSession | % { Remove-SFTPSession -SessionId ($_.SessionId) }
 Remove-SSHSession -SessionId 0
 Remove-SSHTrustedHost -HostName $SftpIp
-#Install package
-$SessionSSH = New-SSHSession -AcceptKey -ComputerName  $SftpIp -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$linuser", (ConvertTo-SecureString -AsPlainText "$linpass" -Force))
-Get-SSHSession | fl
+
+# Install package and verify installation in a loop
+$SessionSSH = New-SSHSession -AcceptKey -ComputerName $SftpIp -Credential (New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$linuser", (ConvertTo-SecureString -AsPlainText "$linpass" -Force))
 $session = Get-SSHSession -Index 0
-Start-Sleep 3
-$stream = $session.Session.CreateShellStream("dumb", 0, 0, 0, 0, 1000)
-Start-Sleep 3
-$stream.Write("sudo pkill -9 dpkg`n")
-Start-Sleep 5
-$stream.Write("while ! dpkg -s cohesity-agent &>/dev/null; do sudo dpkg --force-confnew -i $agentFile ; done`n")
-Start-Sleep 40
-$stream.Write("while ! dpkg -s cohesity-agent &>/dev/null; do sudo dpkg --force-confnew -i $agentFile ; done`n")
-Start-Sleep 40
-$stream.Write("exit`n")
-Remove-SSHSession -SessionId 0
+$stream = $session.Session.CreateShellStream("xterm", 80, 24, 800, 600, 1024)
+
+# Run install + validation loop
+$installCommand = @"
+sudo pkill -9 dpkg
+sleep 3
+while ! dpkg -s cohesity-agent >/dev/null 2>&1; do
+  echo "Attempting install..."
+  sudo dpkg --force-confnew -i $SftpPath/$agentFile
+  sleep 10
+done
+echo "Cohesity Agent is installed successfully."
+exit
+"@
+
+# Send command to shell stream
+$stream.Write("$installCommand`n")
+Start-Sleep -Seconds 60
+
+# Cleanup SSH session
+Remove-SSHSession -SessionId $session.SessionId
 Remove-SSHTrustedHost -HostName $SftpIp
