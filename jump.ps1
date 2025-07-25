@@ -1,3 +1,7 @@
+reg add HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist /v 1 /t REG_SZ /d dkckgdiclklkmiaimnpdlccihdkfbjdd
+Start-Process chrome
+start-sleep 5
+Stop-Process -Name "chrome" -Force
 $path = "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp"
 Set-ItemProperty -Path $path -Name UserAuthentication -Type DWord -Value 0
 $nic = get-netadapter
@@ -18,5 +22,4 @@ $trigger2 = New-ScheduledTaskTrigger -AtLogon
 $settings2 = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $principal2 = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunLevel Highest
 Register-ScheduledTask -TaskName "Fix SSMS" -Action $action2 -Trigger $trigger2 -Principal $principal2 -Settings $settings2
-reg add HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist /v 1 /t REG_SZ /d dkckgdiclklkmiaimnpdlccihdkfbjdd
 shutdown /r /t 0
