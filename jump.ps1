@@ -1,7 +1,7 @@
-reg add HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist /v 1 /t REG_SZ /d dkckgdiclklkmiaimnpdlccihdkfbjdd
-Start-Process chrome
-start-sleep 5
-Stop-Process -Name "chrome" -Force
+#reg add HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist /v 1 /t REG_SZ /d dkckgdiclklkmiaimnpdlccihdkfbjdd
+#Start-Process chrome
+#start-sleep 5
+#Stop-Process -Name "chrome" -Force
 $path = "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp"
 Set-ItemProperty -Path $path -Name UserAuthentication -Type DWord -Value 0
 $nic = get-netadapter
