@@ -79,6 +79,8 @@ $stream = $session.Session.CreateShellStream("xterm", 80, 24, 800, 600, 1024)
 # Run install + validation loop
 $installCommand = @"
 sudo pkill -9 dpkg
+sudo rm /var/lib/dpkg/lock
+sudo dpkg --configure -a
 sleep 3
 while ! dpkg -s cohesity-agent >/dev/null 2>&1; do
   echo "Attempting install..."
