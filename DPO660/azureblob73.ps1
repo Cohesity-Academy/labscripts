@@ -55,4 +55,4 @@ $myObject = @{
                        }
 }
 
-$null = api post vaults $myObject
+$null = api post -v2 data-protect/external-targets $myObject
