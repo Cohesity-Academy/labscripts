@@ -79,8 +79,8 @@ $policyParams = @{
                                                    )
                            };
     "retryOptions" = @{
-                         "retries" = 3;
-                         "retryIntervalMins" = 5
+                         "retries" = 1;
+                         "retryIntervalMins" = 1
                      }
 }
 
