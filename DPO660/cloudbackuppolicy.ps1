@@ -61,12 +61,6 @@ $policyParams = @{
                                                        }
                                                    )
                            };
-    "alertPolicy" = @{
-            "backupRunStatus" = @(
-                "kFailure"
-            );
-            "alertTargets" = @()
-        };
     "retryOptions" = @{
                          "retries" = 3;
                          "retryIntervalMins" = 5
