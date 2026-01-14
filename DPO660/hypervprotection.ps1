@@ -52,6 +52,24 @@ apiauth -vip $vip -username $username -domain $domain -password $password -quiet
     }else{
         $viewBox = $viewBoxes[0]
     }
+    
+    # get HyperV Server ID
+    $hyperv = api get protectionSources
+    $targetName = $server
+    $hypervid = ($hyperv.protectionSource | Where-Object {$_.name -ieq $targetName}).id
+$hypervid$
+    
+    # get HyperV VMs
+    $vms = api get protectionSources
+    if($vms -is [array]){
+            $vm = $vms | Where-Object { $_.name -ieq $Server }
+            if (!$viewBox) { 
+                write-host "HyperV Server $Server not Found" -ForegroundColor Yellow
+                exit
+            }
+    }else{
+        $vm = $vms[0]
+    }
 
     
 $myObject = @{
