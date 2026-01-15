@@ -1,4 +1,4 @@
-# usage: ./hypervprotection.ps1 -vip clusername -username admin -password password -Name "" -server ""
+# usage: ./protecthyperv.ps1 -vip clusername -username admin -password password -Name "" -server "" -vms "" -policyName "" -storageDomainName ""
 
 # process commandline arguments
 [CmdletBinding()]
@@ -6,14 +6,14 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,  # the cluster to connect to (DNS name or IP)
     [Parameter(Mandatory = $True)][string]$username,  # username (local or AD)
     [Parameter(Mandatory = $True)][string]$password,  # local or AD domain password
-    [Parameter()][array]$server = '',  # optional name of one server protect
+    [Parameter(Mandatory = $True)][string]$server = '',  # optional name of one server protect
     [Parameter(Mandatory = $true)][string[]]$vms = '',
-    [Parameter(Mandatory = $True)][string]$name,  # name of policy
+    [Parameter(Mandatory = $True)][string]$name,  # name of protection group
     [Parameter()][string]$startTime = '20:00',
     [Parameter()][string]$timeZone = 'America/New_York',
     [Parameter()][int]$incrementalSlaMinutes = 60,
     [Parameter()][string]$storageDomainName = 'DefaultStorageDomain',
-    [Parameter()][string]$policyName
+    [Parameter(Mandatory = $True)][string]$policyName
     )
 
 # source the cohesity-api helper code
