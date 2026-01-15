@@ -16,7 +16,10 @@ apiauth -vip $vip -username $username -password $password -quiet
 
 $objects = api get -v2 data-protect/protection-groups
 
-If (($objects |?{$_.protectionGroups.name -eq "WindowsProtection"}).protectionGroups.physicalParams.fileProtectionTypeParams.objects.filePaths.excludedPaths -eq "/C/Users/Coh-Student.COHESITYLABS/Documents/Cohesity/Images"){
-Write-Host "Correct"
+$pgs = ($objects.protectionGroups | Where-Object name -eq "VirtualProtection")
+
+if ($pgs.hypervParams.objects.name -contains "Guest-VM-2") {
+    Write-Host "Correct"
+} else {
+    Write-Host "Incorrect"
 }
-Else {Write-Host "Incorrect"}
