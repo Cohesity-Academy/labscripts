@@ -24,7 +24,9 @@ $principal2 = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunL
 Register-ScheduledTask -TaskName "Fix SSMS" -Action $action2 -Trigger $trigger2 -Principal $principal2 -Settings $settings2
 $registryPaths = @(
     "HKLM:\SYSTEM\ControlSet001\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}",
-    "HKLM:\SYSTEM\ControlSet002\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}"
+    "HKLM:\SYSTEM\ControlSet002\Control\Class\{71a27cdd-812a-11d0-bec7-08002be2092f}",
+    "HKLM:\SYSTEM\ControlSet001\Control\Class\{533C5B84-EC70-11D2-9505-00C04F79DEAF}",
+    "HKLM:\SYSTEM\ControlSet002\Control\Class\{533C5B84-EC70-11D2-9505-00C04F79DEAF}"
 )
 
 foreach ($path in $registryPaths) {
