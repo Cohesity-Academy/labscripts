@@ -41,33 +41,40 @@ $headers = @{
     "authorization" = "Bearer $token"
 }
 $errors = @()
-# 1. Check for a successful recovery task for Guest-VM-1
-$restoreTasksUrl = "https://$vip/irisservices/api/v1/public/restoreTasks?numTasks=20"
+# 1. Check for a successful recovery task for Guest-VM-1 (on correct object, no prefix)
+$recoveryUrl = "https://$vip/v2/data-protect/recoveries?snapshotEnvironments=kHyperV&status=Succeeded&recoveryActions=RecoverVMs&returnChildTasks=false&fortknoxOnpremRecoveriesOnly=false&pruneObjects=false"
 try {
-    $restoreTasksResponse = Invoke-RestMethod -Uri $restoreTasksUrl -Headers $headers
+    $recoveryResponse = Invoke-RestMethod -Uri $recoveryUrl -Headers $headers
 } catch {
-    $errors += "Could not retrieve restore tasks. Please check your cluster and try again."
+    $errors += "Could not retrieve recovery tasks."
 }
-$guestVm1Restore = $null
-if ($restoreTasksResponse.restoreTasks) {
-    foreach ($task in $restoreTasksResponse.restoreTasks) {
-        if ($task.status -eq "kSuccess" -or $task.status -eq "Succeeded") {
-            if ($task.restoredObjectVec) {
-                foreach ($obj in $task.restoredObjectVec) {
-                    if ($obj.name -eq "Guest-VM-1") {
-                        $guestVm1Restore = $task
-                        break
+$guestVm1Recovery = $null
+$recoveryEndTime = $null
+$prefixUsed = $null
+if ($recoveryResponse.recoveries) {
+    foreach ($recovery in $recoveryResponse.recoveries) {
+        if ($recovery.hypervParams -and $recovery.hypervParams.objects) {
+            foreach ($obj in $recovery.hypervParams.objects) {
+                if ($obj.objectInfo -and $obj.objectInfo.name -eq "Guest-VM-1") {
+                    $guestVm1Recovery = $recovery
+                    $recoveryEndTime = $recovery.endTimeUsecs
+                    # Check for prefix under hyperTargetParams.renameRecoveredVmsParams.prefix
+                    if ($recovery.hyperTargetParams -and $recovery.hyperTargetParams.renameRecoveredVmsParams) {
+                        $prefixUsed = $recovery.hyperTargetParams.renameRecoveredVmsParams.prefix
                     }
+                    break
                 }
             }
         }
-        if ($guestVm1Restore) { break }
+        if ($guestVm1Recovery) { break }
     }
 }
-if (-not $guestVm1Restore) {
-    $errors += "No successful recovery task found for Guest-VM-1. Please perform a recovery with the correct name."
+if (-not $guestVm1Recovery) {
+    $errors += "No successful recovery task found on the correct object (Guest-VM-1). Please perform a recovery on the correct object."
+} elseif ($prefixUsed -and $prefixUsed.Trim() -ne "") {
+    $errors += "The recovery was performed with a prefix ('$prefixUsed'). Please recover Guest-VM-1 with the original name (no prefix)."
 }
-# 2. Check Guest-VM-1 is in the protection group objects
+# 2. Check Guest-VM-1 is in the protection group and no missing entities
 $pgUrl = "https://$vip/v2/data-protect/protection-groups?environments=kHyperV"
 try {
     $pgResponse = Invoke-RestMethod -Uri $pgUrl -Headers $headers
@@ -78,6 +85,12 @@ $pg = $pgResponse.protectionGroups | Where-Object { $_.name -eq "VirtualProtecti
 if (-not $pg) {
     $errors += "The protection group 'VirtualProtection' was not found. Please ensure you have created it."
 } else {
+    # Check missing entities
+    if ($pg.missingEntities -and $pg.missingEntities.Count -gt 0) {
+        $missingNames = $pg.missingEntities | ForEach-Object { $_.name }
+        $errors += "The following VMs are missing from the source: $($missingNames -join ', '). Please refresh the source and ensure all VMs are available."
+    }
+    # Check Guest-VM-1 is present
     $objectNames = @()
     if ($pg.hypervParams -and $pg.hypervParams.objects) {
         $objectNames = $pg.hypervParams.objects | ForEach-Object { $_.name }
@@ -87,7 +100,7 @@ if (-not $pg) {
     }
 }
 # 3. Check for a successful backup run for Guest-VM-1 after recovery
-if ($pg -and $guestVm1Restore) {
+if ($pg -and $guestVm1Recovery) {
     # Find the protection job for this group
     $jobsUrl = "https://$vip/irisservices/api/v1/public/protectionJobs"
     try {
@@ -108,11 +121,10 @@ if ($pg -and $guestVm1Restore) {
         }
         if ($runsResponse -and $runsResponse.Count -gt 0) {
             $foundSuccess = $false
-            $restoreEndTime = $guestVm1Restore.endTimeUsecs
             foreach ($run in ($runsResponse | Sort-Object { $_.backupRun.stats.startTimeUsecs } -Descending)) {
                 $guestVm1Status = $null
                 $runTime = $run.backupRun.stats.startTimeUsecs
-                if ($runTime -gt $restoreEndTime) {
+                if ($runTime -gt $recoveryEndTime) {
                     if ($run.backupRun.PSObject.Properties.Name -contains "sourceBackupStatus") {
                         foreach ($src in $run.backupRun.sourceBackupStatus) {
                             if ($src.source.name -eq "Guest-VM-1") {
@@ -136,7 +148,7 @@ if ($pg -and $guestVm1Restore) {
     }
 }
 if ($errors.Count -eq 0) {
-    Write-Output "Congratulations! You have successfully recovered Guest-VM-1, re-added it to the protection group, and performed a successful backup run."
+    Write-Output "Congratulations! You have successfully recovered Guest-VM-1 (on the correct object, with no prefix), re-added it to the protection group, and performed a successful backup run."
     Write-Output "Correct"
     exit
 } else {
