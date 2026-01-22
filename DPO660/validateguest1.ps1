@@ -41,7 +41,7 @@ $headers = @{
     "authorization" = "Bearer $token"
 }
 $errors = @()
-# 1. Check for a successful recovery task for Guest-VM-1 (on correct object, no prefix)
+# 1. Check for a successful recovery task for Guest-VM-1 (on correct object, original location, no prefix)
 $recoveryUrl = "https://$vip/v2/data-protect/recoveries?snapshotEnvironments=kHyperV&status=Succeeded&recoveryActions=RecoverVMs&returnChildTasks=false&fortknoxOnpremRecoveriesOnly=false&pruneObjects=false"
 try {
     $recoveryResponse = Invoke-RestMethod -Uri $recoveryUrl -Headers $headers
@@ -50,7 +50,8 @@ try {
 }
 $guestVm1Recovery = $null
 $recoveryEndTime = $null
-$prefixUsed = $null
+$prefixFieldPresent = $false
+$altLocationFieldPresent = $false
 if ($recoveryResponse.recoveries) {
     foreach ($recovery in $recoveryResponse.recoveries) {
         if ($recovery.hypervParams -and $recovery.hypervParams.objects) {
@@ -58,9 +59,17 @@ if ($recoveryResponse.recoveries) {
                 if ($obj.objectInfo -and $obj.objectInfo.name -eq "Guest-VM-1") {
                     $guestVm1Recovery = $recovery
                     $recoveryEndTime = $recovery.endTimeUsecs
-                    # Check for prefix under hyperTargetParams.renameRecoveredVmsParams.prefix
-                    if ($recovery.hyperTargetParams -and $recovery.hyperTargetParams.renameRecoveredVmsParams) {
-                        $prefixUsed = $recovery.hyperTargetParams.renameRecoveredVmsParams.prefix
+                    # Check for prefix and alternate location fields anywhere in the recovery object
+                    if ($recovery.PSObject.Properties.Name -contains "recoverVmParams") {
+                        $rvmp = $recovery.recoverVmParams
+                        if ($rvmp -and $rvmp.hyperTargetParams) {
+                            if ($rvmp.hyperTargetParams.PSObject.Properties.Name -contains "renameRecoveredVmsParams") {
+                                $prefixFieldPresent = $true
+                            }
+                            if ($rvmp.hyperTargetParams.PSObject.Properties.Name -contains "recoveryTargetConfig") {
+                                $altLocationFieldPresent = $true
+                            }
+                        }
                     }
                     break
                 }
@@ -71,8 +80,12 @@ if ($recoveryResponse.recoveries) {
 }
 if (-not $guestVm1Recovery) {
     $errors += "No successful recovery task found on the correct object (Guest-VM-1). Please perform a recovery on the correct object."
-} elseif ($prefixUsed -and $prefixUsed.Trim() -ne "") {
-    $errors += "The recovery was performed with a prefix ('$prefixUsed'). Please recover Guest-VM-1 with the original name (no prefix)."
+}
+if ($prefixFieldPresent) {
+    $errors += "The recovery was performed with a prefix. Please recover Guest-VM-1 with the original name (no prefix)."
+}
+if ($altLocationFieldPresent) {
+    $errors += "Guest-VM-1 was not recovered to its original location. Please recover Guest-VM-1 to the original location."
 }
 # 2. Check Guest-VM-1 is in the protection group and no missing entities
 $pgUrl = "https://$vip/v2/data-protect/protection-groups?environments=kHyperV"
@@ -148,7 +161,7 @@ if ($pg -and $guestVm1Recovery) {
     }
 }
 if ($errors.Count -eq 0) {
-    Write-Output "Congratulations! You have successfully recovered Guest-VM-1 (on the correct object, with no prefix), re-added it to the protection group, and performed a successful backup run."
+    Write-Output "Congratulations! You have successfully recovered Guest-VM-1 (on the correct object, to the original location, with no prefix), re-added it to the protection group, and performed a successful backup run."
     Write-Output "Correct"
     exit
 } else {
@@ -156,3 +169,15 @@ if ($errors.Count -eq 0) {
     Write-Output "Incorrect"
     exit
 }
+
+
+Message Jess Creed
+
+
+
+
+
+
+
+
+
