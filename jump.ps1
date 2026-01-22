@@ -23,5 +23,5 @@ $settings2 = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGo
 $principal2 = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunLevel Highest
 Register-ScheduledTask -TaskName "Fix SSMS" -Action $action2 -Trigger $trigger2 -Principal $principal2 -Settings $settings2
 # Give Azure RunCommand time to send completion back before rebooting
-Start-Process -FilePath "shutdown.exe" -ArgumentList '/r /t 60 /c "Reboot after lab setup"' -WindowStyle Hidden
+#Start-Process -FilePath "shutdown.exe" -ArgumentList '/r /t 60 /c "Reboot after lab setup"' -WindowStyle Hidden
 exit 0
