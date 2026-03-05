@@ -1,0 +1,57 @@
+FS Cheat Sheet s5850 
+username/password: admin
+Switch1: 192.168.10.1
+Switch2: 192.168.10.2
+
+enable
+configure terminal
+interface vlan 1
+no ip address dhcp
+ip address 192.168.10.1 255.255.255.0
+exit
+exit
+write memory
+copy running-config current-config
+
+
+show interface summary
+show vlan brief
+
+
+https://www.downloads.cohesity.com/artifacts/7.3.2/20260129-222510/release_full/tar/cohesity-7.3.2_release-20260123_529553a9.tar.gz
+
+https://www.downloads.cohesity.com/artifacts/7.3.2/20260129-222510/release_full/vm_robo_image/esx/cohesity-esx-7.3.2_release-20260123_529553a9.ova
+
+configure terminal
+interface eth-0-13
+speed 1000
+exit
+interface eth-0-14
+speed 1000
+exit
+interface eth-0-15
+speed 1000
+exit
+interface eth-0-16
+speed 1000
+exit
+interface eth-0-21
+speed 1000
+exit
+interface eth-0-23
+speed 1000
+exit
+interface eth-0-7
+no channel-group
+exit
+interface range eth-0-10 - 12
+no channel-group 
+exit
+interface agg 1
+switchport mode trunk
+switchport trunk allowed vlan all
+exit
+exit
+show interface agg 1
+show lacp interfaces
+write
