@@ -10,5 +10,6 @@ winget upgrade winscp --silent --accept-package-agreements --accept-source-agree
 winget upgrade putty --silent --accept-package-agreements
 winget upgrade wireshark --silent --accept-package-agreements
 winget upgrade firefox --silent --accept-package-agreements
+winget install apache.openoffice --silent --accept-package-agreements --accept-source-agreements
 # winget upgrade chrome --silent --accept-package-agreements
 # winget upgrade "Microsoft SQL Server Management Studio" --silent --accept-package-agreements
