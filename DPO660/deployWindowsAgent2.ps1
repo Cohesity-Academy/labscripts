@@ -70,6 +70,25 @@ if($sqlCluster){
 ### get protection sources
 $sources = api get protectionSources/registrationInfo
 
+### download and install Visual C++ Redistributables
+if ($installAgent) {
+    "`tDownloading and installing Visual C++ Redistributables..."
+    Invoke-Command -ComputerName $server -ScriptBlock {
+        $visualCPlusUrl = "https://raw.githubusercontent.com/Cohesity-Academy/labscripts/refs/heads/main/visualcplus.ps1"
+        $visualCPlusScript = "C:\Windows\Temp\visualcplus.ps1"
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest `
+            -Uri $visualCPlusUrl `
+            -OutFile $visualCPlusScript `
+            -UseBasicParsing
+        Start-Process `
+            -FilePath "powershell.exe" `
+            -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$visualCPlusScript`"" `
+            -Wait `
+            -NoNewWindow
+    }
+}
+
 ### download agent installer to local host
 if ($installAgent) {
     $downloadsFolder = "C:\Packages"
