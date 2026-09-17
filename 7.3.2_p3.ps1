@@ -21,3 +21,4 @@ Write-Host @'
  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝   ╚═╝   ╚══════╝
 
 '@ -ForegroundColor Green
+pause
