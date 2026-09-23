@@ -6,9 +6,9 @@ $ErrorActionPreference = "Stop"
 
 $Installers = @(
     @{
-        Name = "Visual C++ 2015-2022 Redistributable (x64)"
-        Url  = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
-        File = "vc_redist.x64.exe"
+        Name = "Visual C++ 2015-2022 Redistributable (x86)"
+        Url  = "https://aka.ms/vs/17/release/vc_redist.x86.exe"
+        File = "vc_redist.x86.exe"
     }
 )
 
