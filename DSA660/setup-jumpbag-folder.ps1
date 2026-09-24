@@ -6,7 +6,7 @@
 # software. Hashes in the validation CSV are placeholders only.
 # ============================================================
 
-$targetDrive = "S:"
+$targetDrive = "c:"
 $root = "$targetDrive\Digital-JumpBag"
 
 # ------------------------------------------------------------
