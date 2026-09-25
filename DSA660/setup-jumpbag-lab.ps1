@@ -276,15 +276,15 @@ if ($policy) {
 }
 
 $policyApiError = $cohesity_api.last_api_error
-if ($policyApiError -ne 'OK' -or -not $policy) {
-    $policyDebugFile = Join-Path -Path $scriptDirectory -ChildPath 'jumpbag-policy-request.json'
-    $policyRequest | ConvertTo-Json -Depth 99 | Set-Content -LiteralPath $policyDebugFile -Encoding UTF8
-    throw "Cohesity rejected the protection policy request: $policyApiError Request JSON: $policyDebugFile"
-}
-
 $policy = @((api get -v2 'data-protect/policies').policies | Where-Object { $_.name -ieq $PolicyName }) | Select-Object -First 1
 if (-not $policy) {
-    throw "Cohesity accepted the request but policy '$PolicyName' was not present in the subsequent policy list."
+    $policyDebugFile = Join-Path -Path $scriptDirectory -ChildPath 'jumpbag-policy-request.json'
+    $policyRequest | ConvertTo-Json -Depth 99 | Set-Content -LiteralPath $policyDebugFile -Encoding UTF8
+    throw "The policy '$PolicyName' was not present after the API request. Cohesity API error: $policyApiError Request JSON: $policyDebugFile"
+}
+
+if ($policyApiError -ne 'OK') {
+    Write-Warning "Cohesity reported '$policyApiError', but policy '$PolicyName' exists. Continuing with policy ID $($policy.id)."
 }
 
 Write-Step "Creating or updating protection group '$ProtectionGroupName'"
