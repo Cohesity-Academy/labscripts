@@ -2,6 +2,36 @@
 #requires -RunAsAdministrator
 
 $ErrorActionPreference = "Stop"
+
+### check whether Visual C++ x86 is already installed
+$Registry = [Microsoft.Win32.RegistryKey]::OpenBaseKey(
+    [Microsoft.Win32.RegistryHive]::LocalMachine,
+    [Microsoft.Win32.RegistryView]::Registry32
+)
+
+$Runtime = $null
+$AlreadyInstalled = $false
+
+try {
+    $Runtime = $Registry.OpenSubKey(
+        'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86'
+    )
+
+    $AlreadyInstalled = (
+        $null -ne $Runtime -and
+        $Runtime.GetValue('Installed') -eq 1
+    )
+}
+finally {
+    if ($null -ne $Runtime) { $Runtime.Dispose() }
+    $Registry.Dispose()
+}
+
+if ($AlreadyInstalled) {
+    Write-Host "Visual C++ x86 is already installed. Skipping installation." -ForegroundColor Green
+    exit 0
+}
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Installers = @(
